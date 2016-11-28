@@ -1,0 +1,4 @@
+CREATE TABLE ALUNO (
+Matricula C nn chv,
+Nome C,
+CR I)
