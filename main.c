@@ -6,7 +6,7 @@ void createTable(char *nomeArq, char *nomeTab){
     char linha[100];
     char *token;
     char *verificador;
-    //CALCULA GRAU
+
     int ch=0;
     int grau=0;
     char *aux;
@@ -16,6 +16,7 @@ void createTable(char *nomeArq, char *nomeTab){
     strcat(nomeTab,".dad.txt");
     FILE *arqDados= fopen(nomeTab, "w");
     fclose(arqDados);
+     //CALCULA GRAU
     while(!feof(arqComandos))
     {
         ch = fgetc(arqComandos);
