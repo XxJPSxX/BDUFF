@@ -9,10 +9,11 @@ void createTable(char *nomeArq, char *nomeTab){
 
     int ch=0;
     int grau=0;
-    char *aux;
+    char *aux = malloc(strlen(nomeTab) + 1);
+    strcpy(aux, nomeTab);
     FILE *arqComandos = fopen(nomeArq, "r");
     strcat(aux,".ctl.txt");
-    FILE *arqInfos = fopen(nomeTab, "w");
+    FILE *arqInfos = fopen(aux, "w");
     strcat(nomeTab,".dad.txt");
     FILE *arqDados= fopen(nomeTab, "w");
     fclose(arqDados);

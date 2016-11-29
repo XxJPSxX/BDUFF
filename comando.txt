@@ -1,4 +1,4 @@
 CREATE TABLE ALUNO (
-MATRICULA C nn chv ord,
 NOME C,
+MATRICULA C nn chv ord,
 CR I)
