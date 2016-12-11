@@ -224,7 +224,7 @@ void selecao(char *relacao, char *atr, char *op, char *val, char *saida)
 	char grau[20];
 	strcpy(grau,grau_aux);
 	
-	//copia o ".clt"
+	//copia o ".ctl"
 	while(fgets(linha, sizeof(linha), frelacao))
 	{
 		fprintf(fsaida,"%s", linha);
@@ -234,7 +234,7 @@ void selecao(char *relacao, char *atr, char *op, char *val, char *saida)
 		i++;
 		
 	}
-	//fecha os arquivos de ".clt"
+	//fecha os arquivos de ".ctl"
 	fclose(fsaida);
 	fclose(frelacao);
 
