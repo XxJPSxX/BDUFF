@@ -151,7 +151,6 @@ char *geraNomeArq(char *rel, char *extensao)
 
 int compara(char *op, char *val1, char *val2)
 {
-	printf("%s",op);
 	if(strcmp(op,"<") == 0)
 	{
 		return strcmp(val1,val2);
@@ -163,7 +162,9 @@ int compara(char *op, char *val1, char *val2)
 	}
 	if(strcmp(op,"=") == 0)
 	{		
-		return strcmp(val2,val1);
+		int i = strcmp(val1,val2);
+		if(i == 0) return 1;
+		return 0;
 	}
 	if(strcmp(op,"<=") == 0)
 	{
@@ -179,7 +180,6 @@ int compara(char *op, char *val1, char *val2)
 	}
 	if(strcmp(op,"<>") == 0)
 	{
-		printf("%s <> %s\n" , val1,val2);
 		return strcmp(val1,val2);
 	}
 }
@@ -403,24 +403,34 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 	
 	char linhaA[50], linhaB[50];
 	int card = 0;
-	while(fgets(linhaA, sizeof(linhaA), arqA) && fgets(linhaB, sizeof(linhaB), arqB) && strcmp(linhaA,"\n") && strcmp(linhaB,"\n"))
+	
+	while(fgets(linhaA, sizeof(linhaA), arqA) && strcmp(linhaA,"\n"))
 	{
-		char auxA[sizeof(linhaA)],auxB[sizeof(linhaB)];
+		char auxA[sizeof(linhaA)];
 		//tira o \n
 		char *val = strtok(linhaA,"\n");
 		strcpy(auxA,val);
-		val = strtok(linhaB,"\n");
-		strcpy(auxB,val);
-		//---------
-		char *valA = pegaVal(a,atrA,auxA), *valB = pegaVal(b,atrB,auxB);
-		if(compara("=",valA,valB))
+		char *valA = pegaVal(a,atrA,auxA);
+		
+		while(fgets(linhaB, sizeof(linhaB), arqB) && strcmp(linhaB,"\n"))
 		{
-			char *linha = junta(linhaA,linhaB);
-			fprintf(fsaida,"%s", linha);
-			card++;
+			char auxB[sizeof(linhaB)];
+			//tira o \n
+			val = strtok(linhaB,"\n");
+			strcpy(auxB,val);
+			//---------
+			char *valB = pegaVal(b,atrB,auxB);
+			if(compara("=",valA,valB))
+			{
+				char *linha = junta(linhaA,linhaB);
+				fprintf(fsaida,"%s", linha);
+				card++;
+			}
+
+			free(valB);
 		}
 		free(valA);
-		free(valB);
+		rewind(arqB);
 	}
 	fclose(fsaida);
 	fclose(arqA);
