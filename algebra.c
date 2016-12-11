@@ -239,12 +239,12 @@ void selecao(char *relacao, char *atr, char *op, char *val, char *saida)
 	fclose(frelacao);
 
 	//começa a leitura do arquivo de dados
-	aux = geraNomeArq(relacao,".dat");
+	aux = geraNomeArq(relacao,".dad");
 	frelacao = fopen(aux,"rt");
 	free(aux);
 	if(!frelacao)exit(1);
 	
-	aux = geraNomeArq(saida,".dat");
+	aux = geraNomeArq(saida,".dad");
 	fsaida = fopen(aux,"wt");
 	free(aux);
 	if(!fsaida)exit(1);	
@@ -383,17 +383,17 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 	fclose(arqB);
 	
 	//testa os atributos e escreve no outro arquivo
-	arq = geraNomeArq(relA,".dat");
+	arq = geraNomeArq(relA,".dad");
 	arqA = fopen(arq,"rt");
 	if(!arqA)exit(1);
 	free(arq);	
 	
-	arq = geraNomeArq(relB,".dat");
+	arq = geraNomeArq(relB,".dad");
 	arqB = fopen(arq,"rt");
 	if(!arqB)exit(1);
 	free(arq);
 	
-	arq = geraNomeArq(saida,".dat");
+	arq = geraNomeArq(saida,".dad");
 	fsaida = fopen(arq,"wt");
 	if(!arqB)exit(1);
 	free(arq);	
