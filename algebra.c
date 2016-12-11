@@ -448,6 +448,34 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 	libera(b);
 }
 
+void projecao(char *relacao, char *n, char *lista, char *saida)
+{
+	//copiar catalogo para o saida e depois copiar as tuplas que interessam ao op e ao val
+	char *aux;
+	
+	//ajusta o nome do arquvio que serÃ¡ aberto
+	aux = geraNomeArq(relacao,".ctl");
+	FILE *frelacao = fopen(aux,"rd");
+	free(aux);
+	if(!frelacao)exit(1);
+	//ajusta o nome do arquvio que serÃ¡ aberto
+	aux = geraNomeArq(saida,".ctl");
+	FILE *fsaida = fopen(aux,"wt");
+	free(aux);
+	if(!fsaida)exit(1);	
+	
+	//escreve o novo grau e a cardinalidade(que nao se altera) na saida
+	char linha[50],lin[50] ;
+	fgets(linha, sizeof(linha), frelacao);
+	char *grau_antigo = strtok(linha,",");
+	char *cardin = strtok(NULL,",");
+	strcpy(lin,n); // lin recebe o grau "novo" (apos a projecao)
+	strcat(lin,",");
+	strcat(lin,cardin);
+	fprintf(fsaida,"%s", lin);
+	
+}
+
 void interpreta(char *inst)
 {
 	//na primeira leitura, a variavel string vai conter a operação que será realizada
@@ -471,7 +499,25 @@ void interpreta(char *inst)
 	}
 	else if(!strcmp(strings,"P"))
 	{
-	
+		char *relacao = strtok(NULL,"(,)");
+		char *n = strtok(NULL,"(,)");
+		
+		//converte o numero de atributos para saber quantos atributos serão lidos
+		int num = atoi(n);
+		int i;
+		
+		char *lista_aux = strtok(NULL,",");
+		char *lista = malloc(sizeof(char) * 50); //é necessário uma lista auxiliar?
+		strcpy(lista,lista_aux);	
+		for(i=0;i<num-1;i++){
+			strcat(lista,strtok(NULL,"(,)"));
+		}
+		
+		char *saida = strtok(NULL,"(,)");
+		
+		projecao(relacao,n,lista,saida);
+		
+		free(lista);
 	}
 	
 	else 
