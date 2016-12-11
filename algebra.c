@@ -151,32 +151,35 @@ char *geraNomeArq(char *rel, char *extensao)
 
 int compara(char *op, char *val1, char *val2)
 {
-	if(!strcmp(op,"<"))
+	printf("%s",op);
+	if(strcmp(op,"<") == 0)
 	{
 		return strcmp(val1,val2);
 	}
-	if(!strcmp(op,">"))
+	
+	if(strcmp(op,">") == 0)
 	{
 		return strcmp(val2,val1);
 	}
-	if(!strcmp(op,"="))
-	{
-		return !strcmp(val2,val1);
+	if(strcmp(op,"=") == 0)
+	{		
+		return strcmp(val2,val1);
 	}
-	if(!strcmp(op,"<="))
+	if(strcmp(op,"<=") == 0)
 	{
-		if(strcmp(val1,val2) > 0)
+		if(strcmp(val1,val2) <= 0)
 			return 1;
 		return 0;
 	}
-	if(!strcmp(op,">="))
+	if(strcmp(op,">=") == 0)
 	{
-		if(strcmp(val1,val2) < 0)
+		if(strcmp(val1,val2) >= 0)
 			return 1;
 		return 0;
 	}
-	if(!strcmp(op,"<>"))
+	if(strcmp(op,"<>") == 0)
 	{
+		printf("%s <> %s\n" , val1,val2);
 		return strcmp(val1,val2);
 	}
 }
@@ -410,7 +413,6 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 		strcpy(auxB,val);
 		//---------
 		char *valA = pegaVal(a,atrA,auxA), *valB = pegaVal(b,atrB,auxB);
-		printf("valA:%s valB:%s haha\n",valA,valB);
 		if(compara("=",valA,valB))
 		{
 			char *linha = junta(linhaA,linhaB);
