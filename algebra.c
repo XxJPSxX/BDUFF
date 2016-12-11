@@ -56,6 +56,19 @@ void imprime(TAtr *a)
 	}
 }
 
+TAtr *busca(TAtr *a, char *valor)
+{
+	while(a) 
+	{
+		if(strcmp(a->at,valor) == 0)
+		{
+			return a;
+		}
+		a = a->prox;
+	}
+	return NULL;
+}
+
 TAtr *junta_mudando_nomes(TAtr *a, TAtr *b,char *relA, char *relB)
 {
 	TAtr *resp = NULL;
@@ -125,6 +138,7 @@ TAtr *junta_mudando_nomes(TAtr *a, TAtr *b,char *relA, char *relB)
 			aux = aux->prox;
 		}
 	}
+	
 	while(a)
 	{
 		resp = insere_fim(resp,a->atr, a->indice);
@@ -474,6 +488,74 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 	strcat(lin,cardin);
 	fprintf(fsaida,"%s", lin);
 	
+	//converte a lista de atributos em char para uma lista de atributos struct
+	TAtr *atr = NULL;
+	char *atributo = strtok(lista,",\n");
+	
+	while(atributo)
+	{	
+		atr = insere_fim(atr,atributo,-1);
+		atributo = strtok(NULL,",");
+	}
+	
+	int i = 0;
+	//le o arquivo ctl para procurar pelas infos relevantes
+	while(fgets(linha, sizeof(linha), frelacao))
+	{
+		char aux[20];
+		strcpy(aux,linha);
+		char *nomeAtr = strtok(aux,",");
+		TAtr *auxAtr = busca(atr,nomeAtr);
+		if(auxAtr) 
+		{
+			auxAtr->indice = i;
+			fprintf(fsaida,"%s", linha);
+		}
+		i++;
+	}
+
+	//ajusta o nome do arquvio que serÃ¡ aberto
+	aux = geraNomeArq(relacao,".dad");
+	frelacao = fopen(aux,"rd");
+	free(aux);
+	if(!frelacao)exit(1);
+	//ajusta o nome do arquvio que serÃ¡ aberto
+	aux = geraNomeArq(saida,".dad");
+	fsaida = fopen(aux,"wt");
+	free(aux);
+	if(!fsaida)exit(1);	
+	
+	//lista de atributos usada pra percorrer a string de dados que serão copiados
+	TAtr *auxAtr = atr;
+
+	//controlando a copia de virgulas
+	int quantVal = 0;
+	int grau = atoi(n);
+	while(fgets(linha, sizeof(linha), frelacao))
+	{
+		i = 0;
+		char *valor = strtok(linha,",");
+		char linhaSaida[50];	
+		while(auxAtr)
+		{
+			while(i < auxAtr->indice) 
+			{
+				i++;
+				valor = strtok(NULL,","); 
+			}
+			quantVal++;
+			strcat(linhaSaida,valor);
+			valor = strtok(linhaSaida,"\n");
+			if(quantVal != grau)
+				strcat(linhaSaida,",");
+			auxAtr = auxAtr->prox;
+		}
+		printf("Linha de saida: %s\n",valor);
+		fprintf(fsaida,"%s\n",valor);
+	}
+	fclose(fsaida);
+	fclose(frelacao);
+	libera(atr);
 }
 
 void interpreta(char *inst)
@@ -507,16 +589,14 @@ void interpreta(char *inst)
 		int i;
 		
 		char *lista_aux = strtok(NULL,",");
-		char *lista = malloc(sizeof(char) * 50); //é necessário uma lista auxiliar?
+		char *lista = malloc(sizeof(char) * 50); //(André)é necessário uma lista auxiliar?(Alysson)acho q nao
 		strcpy(lista,lista_aux);	
 		for(i=0;i<num-1;i++){
 			strcat(lista,strtok(NULL,"(,)"));
 		}
 		
 		char *saida = strtok(NULL,"(,)");
-		
 		projecao(relacao,n,lista,saida);
-		
 		free(lista);
 	}
 	
