@@ -338,22 +338,28 @@ int main(int argc, char *argv[]){
                         char saida[50];
                         strcpy(saida,"comandoAlgebra.alg");
                         FILE *arqAlgebra = fopen(saida, "wt");
-                        
-                        token = strtok(NULL, " ");
-                        if(strcmp(token,"*")==0){
+			        	
+			        	printf("abriu o arq");
+			        	
+                        token = strtok(NULL, " \n");
+                             
+                        char result[50];
+                        strcpy(result,token);
+                        if(strcmp(result,"*") == 0){
                         	char aux1[100];
+                        	printf("antes do arq comandos");
                         	if(fgets(aux1, sizeof(aux1), arqComandos)){
                         			token = strtok(aux1, " ");
+                        			printf("%s",token);
                         			if(strcmp(token,"FROM")==0){
                         				token = strtok(NULL, " ");
                         				char relA[20];
                         				strcpy(relA,token);
-                        				
                         				//testa se existe join
                         				token = strtok(NULL, " ");
                         				if(token){
                         					//existe join
-                        				}
+                        				}       
                         				else{
                         					//verifica se existe WHERE
                         					char aux2[100];
@@ -363,89 +369,52 @@ int main(int argc, char *argv[]){
                         							
                         							//char *val = strtok(NULL, "=<>");
                    									
+                   									token = strtok(NULL, " ");
                    									
                    									char cond[100], cond_aux[100];
                    									strcpy(cond,token); //cond guarda a condicao de selecao
-                   									strcpy(cond_aux,cond);
-                   									
+                   									strcpy(cond_aux,cond);                   									
                    									
                    									char op[3];
-                   									
+                   									printf("condicao: %s",cond);             									
                    									if((strstr(cond,"<>") != NULL)){
                    									 	strcpy(op,"<>");
                    									}
-                   									else{
-                   										if(strstr(cond,"<=") != NULL){
-                   											strcpy(op,"<=");
-                   										}
-                   										else{	
-                   											if(strstr(cond,">=") != NULL){
-                   												strcpy(op,">=");
-                   											}
-                   											else{
-                   												if(strstr(cond,"=") != NULL){
-                   													strcpy(op,"=");
-                   												}
-                   												else{
-                   													if(strstr(cond,">") != NULL){
-                   														strcpy(op,">");
-                   													}
-                   													else{
-                   														if(strstr(cond,"<") != NULL){
-                   															strcpy(op,"<");
-                   														}
-                   													}
-                   												}
-                   											}
-                   										}
-                   									}
+                   									else if(strstr(cond,"<=") != NULL){
+               											strcpy(op,"<=");
+               											
+               										}
+               										else if(strstr(cond,">=") != NULL){
+           												strcpy(op,">=");
+           											}
+           											else if(strstr(cond,"=") != NULL){
+       														strcpy(op,"=");
+       												}
+       												else if(strstr(cond,">") != NULL){ 
+       													strcpy(op,">");
+   													}
+                   									else if(strstr(cond,"<") != NULL){
+														strcpy(op,"<");
+													}
+													else{
+														exit(1);
+													}
+													
+                   									//char separa[5];
+                   									//strcpy(separa,op);
+                   									//strcat(separa,";");
                    									
-                   									/*
-                   									token = strtok(NULL, "<");
-                   									if(token){
-                   										strcpy(op,"<");
-                   										
-                   										//strcpy(atr,token);
-                   										
-                   										token = strtok(NULL, ">");
-                   										if(token){
-                   											strcat(op,">");
-                   											
-                   											strcpy(val,token);
-                   										}
-                   										else{
-                   											token = strtok(NULL, "=");
-                   											if(token){
-                   												strcat(op,"=");
-                   												
-                   												//strcpy(val,token);
-                   											}
-                   										}
-                   									}
-                   									else{
-                   										token = strtok(NULL, ">");
-                   										if(token){
-                   											strcpy(op,">");
-                   											
-                   											token = strtok(NULL, "=");
-                   											if(token){
-                   												strcat(op,"=");
-                   											}
-                   										}
-                   										else{
-                   											token = strtok(NULL, "=");
-                   											if(token){
-                   												strcat(op,"=");
-                   											}
-                   										}
+                   									printf("%s",op);
                    									
-                   									} */
+                   									char *atr = strtok(cond,op);
+                   									char *val = strtok(NULL,op);
                    									
+                   									printf("%s",atr);
+                   									printf("%s",val);
                    									
-                   									char *atr = strtok(NULL,strcat(op,";"));
-                   									char *val = strtok(NULL,strcat(op,";"));
-                   									
-                   									
+                   									relA[strlen(relA)-1]=0;
+                   									atr[strlen(atr)-1]=0;
+                   									val[strlen(val)-1]=0;
                    									char comando[100]; //vai concatenar td
                    									strcpy(comando,"S(");
                    									strcat(comando,relA);
@@ -459,11 +428,10 @@ int main(int argc, char *argv[]){
                    									strcat(comando,"RESULTADO_SELECAO");
                    									strcat(comando,")");
                    									
-                   									fprintf(arqAlgebra,"%s", comando);
+                   									//printf("%s",comando);
+                   									//int i = fprintf(arqAlgebra,"%s", comando);
+                        							//printf("%d",i);
                         							
-                        							
-                        							
-                        							// como deve ficar salvo selecao(relA,atr, char *op,val, char *saida)
                         						}
                         					}
                         					else{
@@ -480,10 +448,11 @@ int main(int argc, char *argv[]){
                     	fclose(arqAlgebra);
                     	
                     	//interpreta as instruções de algebra geradas
-                    	arqAlgebra = fopen(saida, "wt");
+                    	arqAlgebra = fopen(saida, "rt");
                     	char instrucao[100];
                     	while(fgets(instrucao, sizeof(instrucao), arqAlgebra)){
                     		interpreta(instrucao);
+                    		printf("fiz algo");
                     	}
                     	fclose(arqAlgebra);
                     	    

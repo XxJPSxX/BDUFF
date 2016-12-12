@@ -561,7 +561,6 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 void interpreta(char *inst)
 {
 	printf("%s",inst);
-	return;
 	//na primeira leitura, a variavel string vai conter a operação que será realizada
 	char *strings = strtok(inst,"(,)");
 	if(!strcmp(strings,"S"))
