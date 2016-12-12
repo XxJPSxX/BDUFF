@@ -23,11 +23,11 @@ TAtr *insere_fim(TAtr *l,char *atr, int i)
 	//tira o \n da linha do arquivo
 	char *aux_atr = strtok(atr,"\n");
 	//copia a linha do catálogo
-	strcpy(novo->atr,aux_atr);	
+	strcpy(novo->atr,aux_atr);
 	aux_atr = strtok(aux_atr,",");
-	strcpy(novo->at,aux_atr);	
+	strcpy(novo->at,aux_atr);
 	//copia exatamento o nome do atributo
-	if(aux) 
+	if(aux)
 	{
 		while(aux->prox) aux = aux->prox;
 		aux->prox = novo;
@@ -58,7 +58,7 @@ void imprime(TAtr *a)
 
 TAtr *busca(TAtr *a, char *valor)
 {
-	while(a) 
+	while(a)
 	{
 		if(strcmp(a->at,valor) == 0)
 		{
@@ -80,7 +80,7 @@ TAtr *junta_mudando_nomes(TAtr *a, TAtr *b,char *relA, char *relB)
 		{
 			char atributo[sizeof(aux->atr) + 2],con[2];
 			sprintf(con, "%d", i);
-			
+
 			//separa so o nome do atributo
 			char *nome = strtok(aux->atr,",");
 			strcpy(atributo, nome);
@@ -94,7 +94,7 @@ TAtr *junta_mudando_nomes(TAtr *a, TAtr *b,char *relA, char *relB)
 			aux = aux->prox;
 			i++;
 		}
-		
+
 		aux = b;
 		i = 1;
 		while(aux)
@@ -127,7 +127,7 @@ TAtr *junta_mudando_nomes(TAtr *a, TAtr *b,char *relA, char *relB)
 			strcpy(aux->atr,atributo);
 			aux = aux->prox;
 		}
-		
+
 		aux = b;
 		while(aux)
 		{
@@ -138,13 +138,13 @@ TAtr *junta_mudando_nomes(TAtr *a, TAtr *b,char *relA, char *relB)
 			aux = aux->prox;
 		}
 	}
-	
+
 	while(a)
 	{
 		resp = insere_fim(resp,a->atr, a->indice);
 		a = a->prox;
 	}
-	
+
 	while(b)
 	{
 		resp = insere_fim(resp,b->atr, b->indice);
@@ -163,33 +163,65 @@ char *geraNomeArq(char *rel, char *extensao)
 	return result;
 }
 
+void imprimeTabela(char *relA)
+{
+	char *aux = geraNomeArq(relA,".ctl");
+	FILE *ctl = fopen(aux,"rt");
+	free(aux);
+	if(!ctl) exit(1);
+	aux = geraNomeArq(relA,".dad");
+	FILE *dad = fopen(aux,"rt");
+	free(aux);
+	if(!dad) exit(1);
+	char linha[100];
+
+	//pula o cabecalho
+	fgets(linha, sizeof(linha), ctl);
+	while(fgets(linha, sizeof(linha), ctl))
+	{
+		char *atrNome = strtok(linha,",");
+		printf("%s |\t\t",atrNome);
+	}
+    printf("\n");
+	while(fgets(linha, sizeof(linha), dad))
+    {
+		char *atrNome = strtok(linha,",");
+		while(atrNome)
+        {
+            printf("%s |\t\t",atrNome);
+            atrNome = strtok(NULL,",");
+		}
+        printf("\n");
+	}
+
+	fclose(ctl);
+	fclose(dad);
+}
 
 int compara(char *op, char *val1, char *val2)
 {
 	if(val1[strlen(val1) - 1] == '\n')
 	{
 		val1[strlen(val1) - 1] = '0';
-	} 
+	}
 	if(val2[strlen(val2) - 1] == '\n')
 	{
 		val1[strlen(val2) - 1] = '0';
-	} 
-	
-	printf("%s %s",val1,val2);
+	}
+
 	if(strcmp(op,"<") == 0)
 	{
 		return (strcmp(val1,val2) > 0);
 	}
-	
+
 	if(strcmp(op,">") == 0)
 	{
 		int i = strcmp(val2,val1);
-		printf("valor de %s %s: %d\n",val2,val1,i);
 		return (strcmp(val2,val1) > 0);
-		
+
 	}
 	if(strcmp(op,"=") == 0)
-	{		
+	{
 		int i = strcmp(val1,val2);
 		if(i == 0) return 1;
 		return 0;
@@ -226,35 +258,36 @@ void lerAlgebra(char *arq)
 
 void selecao(char *relacao, char *atr, char *op, char *val, char *saida)
 {
+    imprimeTabela(relacao);
 	//copiar catalogo para o saida e depois copiar as tuplas que interessam ao op e ao val
 	char *aux;
-	
+
 	//ajusta o nome do arquvio que será aberto
 	aux = geraNomeArq(relacao,".ctl");
-	FILE *frelacao = fopen(aux,"rd");
+    FILE *frelacao = fopen(aux,"rt");
 	free(aux);
 	if(!frelacao)exit(1);
 	//ajusta o nome do arquvio que será aberto
 	aux = geraNomeArq(saida,".ctl");
 	FILE *fsaida = fopen(aux,"wt");
 	free(aux);
-	if(!fsaida)exit(1);	
-	
+	if(!fsaida)exit(1);
+
 	//linha do arquivo que será lido
 	char linha[50];
-	int i = 0,atrib = -1;	
-	
+	int i = 0,atrib = -1;
+
 	//faz a primeira leitura para guardar o grau da relação(não muda na operação de seleção)
 	fgets(linha, sizeof(linha), frelacao);
 	//escreve essa linha no arquivo, sendo que ela será modificada no final para atualizar a cardinalidade
-	fprintf(fsaida,"%s", linha);	
+	fprintf(fsaida,"%s", linha);
 
 	//guarda o valor do grau da relação
 	//ao percorrer o while, o valor de grau_aux muda, por isso tem que copiar o conteúdo
 	char *grau_aux = strtok(linha,",");
 	char grau[20];
 	strcpy(grau,grau_aux);
-	
+
 	//copia o ".ctl"
 	while(fgets(linha, sizeof(linha), frelacao))
 	{
@@ -273,11 +306,11 @@ void selecao(char *relacao, char *atr, char *op, char *val, char *saida)
 	frelacao = fopen(aux,"rt");
 	free(aux);
 	if(!frelacao)exit(1);
-	
+
 	aux = geraNomeArq(saida,".dad");
 	fsaida = fopen(aux,"wt");
 	free(aux);
-	if(!fsaida)exit(1);	
+	if(!fsaida)exit(1);
 
 	char linha_aux[100];
 	//guarda a cardinalidade da relação
@@ -287,23 +320,23 @@ void selecao(char *relacao, char *atr, char *op, char *val, char *saida)
 		strcpy(linha_aux,linha);
 		char *tkn = strtok(linha,",");
 		//serve pra chegar no atributo que quero
-		for(i = 0; i < atrib ;i++) tkn = strtok(NULL,","); 
+		for(i = 0; i < atrib ;i++) tkn = strtok(NULL,",");
 		//se a comparar funcionar, escreve o arquivo a atualiza o contador
-		if(compara(op,val,tkn)) 
+		if(compara(op,val,tkn))
 		{
 			fprintf(fsaida,"%s", linha_aux);
 			cont++;
 		}
 	}
-	
+
 	fclose(fsaida);
 	fclose(frelacao);
-	
+
 	//ajusta a cardinalidade da relação
 	aux = geraNomeArq(saida,".ctl");
 	fsaida = fopen(aux,"rt+");
 	free(aux);
-	if(!fsaida)exit(1);	
+	if(!fsaida)exit(1);
 	//transforma o contador em string
 	char con[3];
 	sprintf(con, "%d", cont);
@@ -362,35 +395,35 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 	FILE *fsaida = fopen(arq,"wt");
 	if(!fsaida)exit(1);
 	free(arq);
-	
+
 	arq = geraNomeArq(relA,".ctl");
 	FILE *arqA = fopen(arq,"rt");
 	if(!arqA)exit(1);
 	free(arq);
-		
+
 	char linha[30];
 	int i = 0;
 	//lista auxiliares para construção do arquivo
 	TAtr *a = NULL, *b = NULL;
-	
+
 	//guarda na primeira linha do arquivo ctl os espaços para o grau e a cardinalidade
-	fgets(linha, sizeof(linha), arqA);	
+	fgets(linha, sizeof(linha), arqA);
 	while(fgets(linha, sizeof(linha), arqA))
 	{
 		if(strcmp(linha,"\n"))a = insere_fim(a,linha,i);
 		i++;
 	}
-		
+
 	arq = geraNomeArq(relB,".ctl");
 	FILE *arqB = fopen(arq,"rt");
 	if(!arqB)exit(1);
 	free(arq);
-	
+
 	//descarta primeira linha do arquivo
 	fgets(linha, sizeof(linha), arqB);
-	//faz a leitura dos atributos	 
+	//faz a leitura dos atributos
 	i = 0;
-	
+
 	while(fgets(linha, sizeof(linha), arqB))
 	{
 		if(strcmp(linha,"\n"))b = insere_fim(b,linha,i);
@@ -399,7 +432,7 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 
 	TAtr *atributos = junta_mudando_nomes(a,b,relA,relB), *aux;
 	aux = atributos;
-	
+
 	//copia os atributos pro arquivo ctl
 	while(aux)
 	{
@@ -410,26 +443,26 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 	fclose(fsaida);
 	fclose(arqA);
 	fclose(arqB);
-	
+
 	//testa os atributos e escreve no outro arquivo
 	arq = geraNomeArq(relA,".dad");
 	arqA = fopen(arq,"rt");
 	if(!arqA)exit(1);
-	free(arq);	
-	
+	free(arq);
+
 	arq = geraNomeArq(relB,".dad");
 	arqB = fopen(arq,"rt");
 	if(!arqB)exit(1);
 	free(arq);
-	
+
 	arq = geraNomeArq(saida,".dad");
 	fsaida = fopen(arq,"wt");
 	if(!arqB)exit(1);
-	free(arq);	
-	
+	free(arq);
+
 	char linhaA[50], linhaB[50];
 	int card = 0;
-	
+
 	while(fgets(linhaA, sizeof(linhaA), arqA) && strcmp(linhaA,"\n"))
 	{
 		char auxA[sizeof(linhaA)];
@@ -437,7 +470,7 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 		char *val = strtok(linhaA,"\n");
 		strcpy(auxA,val);
 		char *valA = pegaVal(a,atrA,auxA);
-		
+
 		while(fgets(linhaB, sizeof(linhaB), arqB) && strcmp(linhaB,"\n"))
 		{
 			char auxB[sizeof(linhaB)];
@@ -460,14 +493,14 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 	}
 	fclose(fsaida);
 	fclose(arqA);
-	fclose(arqB);	
-	
+	fclose(arqB);
+
 	arq = geraNomeArq(saida,".ctl");
 	fsaida = fopen(arq,"rt+");
 	if(!fsaida)exit(1);
-	free(arq);		
+	free(arq);
 	fprintf(fsaida,"%d,%d", conta(atributos),card);
-	
+
 	fclose(fsaida);
 	libera(atributos);
 	libera(a);
@@ -478,7 +511,7 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 {
 	//copiar catalogo para o saida e depois copiar as tuplas que interessam ao op e ao val
 	char *aux;
-	
+
 	//ajusta o nome do arquvio que serÃ¡ aberto
 	aux = geraNomeArq(relacao,".ctl");
 	FILE *frelacao = fopen(aux,"rd");
@@ -488,8 +521,8 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 	aux = geraNomeArq(saida,".ctl");
 	FILE *fsaida = fopen(aux,"wt");
 	free(aux);
-	if(!fsaida)exit(1);	
-	
+	if(!fsaida)exit(1);
+
 	//escreve o novo grau e a cardinalidade(que nao se altera) na saida
 	char linha[50],lin[50] ;
 	fgets(linha, sizeof(linha), frelacao);
@@ -499,17 +532,17 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 	strcat(lin,",");
 	strcat(lin,cardin);
 	fprintf(fsaida,"%s", lin);
-	
+
 	//converte a lista de atributos em char para uma lista de atributos struct
 	TAtr *atr = NULL;
 	char *atributo = strtok(lista,",\n");
-	
+
 	while(atributo)
-	{	
+	{
 		atr = insere_fim(atr,atributo,-1);
 		atributo = strtok(NULL,",");
 	}
-	
+
 	int i = 0;
 	//le o arquivo ctl para procurar pelas infos relevantes
 	while(fgets(linha, sizeof(linha), frelacao))
@@ -518,7 +551,7 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 		strcpy(aux,linha);
 		char *nomeAtr = strtok(aux,",");
 		TAtr *auxAtr = busca(atr,nomeAtr);
-		if(auxAtr) 
+		if(auxAtr)
 		{
 			auxAtr->indice = i;
 			fprintf(fsaida,"%s", linha);
@@ -535,8 +568,8 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 	aux = geraNomeArq(saida,".dad");
 	fsaida = fopen(aux,"wt");
 	free(aux);
-	if(!fsaida)exit(1);	
-	
+	if(!fsaida)exit(1);
+
 	//lista de atributos usada pra percorrer a string de dados que serão copiados
 	TAtr *auxAtr = atr;
 
@@ -547,13 +580,13 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 	{
 		i = 0;
 		char *valor = strtok(linha,",");
-		char linhaSaida[50];	
+		char linhaSaida[50];
 		while(auxAtr)
 		{
-			while(i < auxAtr->indice) 
+			while(i < auxAtr->indice)
 			{
 				i++;
-				valor = strtok(NULL,","); 
+				valor = strtok(NULL,",");
 			}
 			quantVal++;
 			strcat(linhaSaida,valor);
@@ -562,7 +595,6 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 				strcat(linhaSaida,",");
 			auxAtr = auxAtr->prox;
 		}
-		printf("Linha de saida: %s\n",valor);
 		fprintf(fsaida,"%s\n",valor);
 	}
 	fclose(fsaida);
@@ -572,7 +604,6 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 
 void interpreta(char *inst)
 {
-	printf("%s",inst);
 	//na primeira leitura, a variavel string vai conter a operação que será realizada
 	char *strings = strtok(inst,"(,)");
 	if(!strcmp(strings,"S"))
@@ -596,26 +627,26 @@ void interpreta(char *inst)
 	{
 		char *relacao = strtok(NULL,"(,)");
 		char *n = strtok(NULL,"(,)");
-		
+
 		//converte o numero de atributos para saber quantos atributos serão lidos
 		int num = atoi(n);
 		int i;
-		
+
 		char *lista_aux = strtok(NULL,",");
 		char *lista = malloc(sizeof(char) * 50); //(André)é necessário uma lista auxiliar?(Alysson)acho q nao
-		strcpy(lista,lista_aux);	
+		strcpy(lista,lista_aux);
 		for(i=0;i<num-1;i++){
 			strcat(lista,strtok(NULL,"(,)"));
 		}
-		
+
 		char *saida = strtok(NULL,"(,)");
 		projecao(relacao,n,lista,saida);
 		free(lista);
 	}
-	
-	else 
+
+	else
 	{
-		printf("%s operação inválida",strings);	
+		printf("%s operação inválida",strings);
 		exit(1);
 	}
 }

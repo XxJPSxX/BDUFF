@@ -276,7 +276,6 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
         arqInfos = fopen(aux, "r+");
         ch++;
         fprintf(arqInfos,"%d,%d",grau,ch);
-        printf("feito");
     }
     fclose(arqInfos);
     fclose(arqComandos);
@@ -324,7 +323,6 @@ int main(int argc, char *argv[]){
                                     if(strcmp(token, " VALUES"))
                                     {
                                         token = strtok(NULL, " ");
-                                        printf("%s",token);
                                         if(token){
                                             fclose(arqComandos);
                                             insertTable(comandoSQL, tabela,token);
@@ -338,23 +336,18 @@ int main(int argc, char *argv[]){
                 }else{
                     if(strcmp(token,"SELECT")==0){
                         //INICIAR SELECAO
-                        
+
                         char saida[50];
                         strcpy(saida,"comandoAlgebra.alg");
                         FILE *arqAlgebra = fopen(saida, "wt");
-			        	
-			        	printf("abriu o arq");
-			        	
                         token = strtok(NULL, " \n");
-                             
+
                         char result[50];
                         strcpy(result,token);
                         if(strcmp(result,"*") == 0){
                         	char aux1[100];
-                        	printf("antes do arq comandos");
                         	if(fgets(aux1, sizeof(aux1), arqComandos)){
                         			token = strtok(aux1, " ");
-                        			printf("%s",token);
                         			if(strcmp(token,"FROM")==0){
                         				token = strtok(NULL, " ");
                         				char relA[20];
@@ -363,30 +356,29 @@ int main(int argc, char *argv[]){
                         				token = strtok(NULL, " ");
                         				if(token){
                         					//existe join
-                        				}       
+                        				}
                         				else{
                         					//verifica se existe WHERE
                         					char aux2[100];
                         					if(fgets(aux2, sizeof(aux2), arqComandos)){
                         						token = strtok(aux2, " ");
                         						if(strcmp(token,"WHERE")==0){
-                        							
+
                         							//char *val = strtok(NULL, "=<>");
-                   									
+
                    									token = strtok(NULL, " ");
-                   									
+
                    									char cond[100], cond_aux[100];
                    									strcpy(cond,token); //cond guarda a condicao de selecao
-                   									strcpy(cond_aux,cond);                   									
-                   									
+                   									strcpy(cond_aux,cond);
+
                    									char op[3];
-                   									printf("condicao: %s",cond);             									
                    									if((strstr(cond,"<>") != NULL)){
                    									 	strcpy(op,"<>");
                    									}
                    									else if(strstr(cond,"<=") != NULL){
                											strcpy(op,"<=");
-               											
+
                										}
                										else if(strstr(cond,">=") != NULL){
            												strcpy(op,">=");
@@ -394,7 +386,7 @@ int main(int argc, char *argv[]){
            											else if(strstr(cond,"=") != NULL){
        														strcpy(op,"=");
        												}
-       												else if(strstr(cond,">") != NULL){ 
+       												else if(strstr(cond,">") != NULL){
        													strcpy(op,">");
    													}
                    									else if(strstr(cond,"<") != NULL){
@@ -403,19 +395,14 @@ int main(int argc, char *argv[]){
 													else{
 														exit(1);
 													}
-													
+
                    									//char separa[5];
                    									//strcpy(separa,op);
                    									//strcat(separa,";");
-                   									
-                   									printf("%s",op);
-                   									
+
                    									char *atr = strtok(cond,op);
                    									char *val = strtok(NULL,op);
-                   									
-                   									printf("%s",atr);
-                   									printf("%s",val);
-                   									
+
                    									relA[strlen(relA)-1]=0;
                    									val[strlen(val)-1]=0;
                    									char comando[100]; //vai concatenar td
@@ -430,37 +417,34 @@ int main(int argc, char *argv[]){
                    									strcat(comando,",");
                    									strcat(comando,"RESULTADO_SELECAO");
                    									strcat(comando,")");
-                   									
+
                    									//printf("%s",comando);
                    									fprintf(arqAlgebra,"%s", comando);
-                        							
                         						}
                         					}
                         					else{
                         						//imprimeTabela(relA); //o resultado e a propria tabela
                         					}
                         				}
-                        			} 
-                        	}	
+                        			}
+                        	}
                         }
                         else{
                         	//lista de atributos
-                        	
                         }
-                     	
+
                     	fclose(arqAlgebra);
-                    	
+
                     	//interpreta as instruções de algebra geradas
                     	arqAlgebra = fopen(saida, "rt");
                     	char instrucao[100];
                     	while(fgets(instrucao, sizeof(instrucao), arqAlgebra)){
                     		interpreta(instrucao);
-                    		printf("fiz algo");
                     	}
                     	fclose(arqAlgebra);
-                    	    
+                        imprimeTabela("RESULTADO_SELECAO");
                     }
-                    
+
                 }
             }
 
