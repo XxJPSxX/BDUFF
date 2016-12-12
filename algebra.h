@@ -163,16 +163,30 @@ char *geraNomeArq(char *rel, char *extensao)
 	return result;
 }
 
+
 int compara(char *op, char *val1, char *val2)
 {
+	if(val1[strlen(val1) - 1] == '\n')
+	{
+		val1[strlen(val1) - 1] = '0';
+	} 
+	if(val2[strlen(val2) - 1] == '\n')
+	{
+		val1[strlen(val2) - 1] = '0';
+	} 
+	
+	printf("%s %s",val1,val2);
 	if(strcmp(op,"<") == 0)
 	{
-		return strcmp(val1,val2);
+		return (strcmp(val1,val2) > 0);
 	}
 	
 	if(strcmp(op,">") == 0)
 	{
-		return strcmp(val2,val1);
+		int i = strcmp(val2,val1);
+		printf("valor de %s %s: %d\n",val2,val1,i);
+		return (strcmp(val2,val1) > 0);
+		
 	}
 	if(strcmp(op,"=") == 0)
 	{		
@@ -249,7 +263,6 @@ void selecao(char *relacao, char *atr, char *op, char *val, char *saida)
 		char *atrname = strtok(linha,",");
 		if(!strcmp(atr,atrname))atrib = i;
 		i++;
-		
 	}
 	//fecha os arquivos de ".ctl"
 	fclose(fsaida);
@@ -269,13 +282,12 @@ void selecao(char *relacao, char *atr, char *op, char *val, char *saida)
 	char linha_aux[100];
 	//guarda a cardinalidade da relação
 	int cont = 0;
-	
 	while(fgets(linha, sizeof(linha), frelacao))
 	{
 		strcpy(linha_aux,linha);
 		char *tkn = strtok(linha,",");
 		//serve pra chegar no atributo que quero
-		for(i = 1; i < atrib ;i++) tkn = strtok(NULL,","); 
+		for(i = 0; i < atrib ;i++) tkn = strtok(NULL,","); 
 		//se a comparar funcionar, escreve o arquivo a atualiza o contador
 		if(compara(op,val,tkn)) 
 		{

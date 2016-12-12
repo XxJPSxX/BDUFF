@@ -413,7 +413,6 @@ int main(int argc, char *argv[]){
                    									printf("%s",val);
                    									
                    									relA[strlen(relA)-1]=0;
-                   									atr[strlen(atr)-1]=0;
                    									val[strlen(val)-1]=0;
                    									char comando[100]; //vai concatenar td
                    									strcpy(comando,"S(");
@@ -429,8 +428,7 @@ int main(int argc, char *argv[]){
                    									strcat(comando,")");
                    									
                    									//printf("%s",comando);
-                   									//int i = fprintf(arqAlgebra,"%s", comando);
-                        							//printf("%d",i);
+                   									fprintf(arqAlgebra,"%s", comando);
                         							
                         						}
                         					}
@@ -443,6 +441,7 @@ int main(int argc, char *argv[]){
                         }
                         else{
                         	//lista de atributos
+                        	
                         }
                      	
                     	fclose(arqAlgebra);
