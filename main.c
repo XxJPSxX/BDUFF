@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "algebra.h"
 
 void createTable(char *nomeArq, char *nomeTab){
     char linha[100];
@@ -280,8 +281,8 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
 }
 int main(int argc, char *argv[]){
     char comandoSQL[30];
-    //scanf("%s", &comandoSQL);
-    FILE *arqComandos = fopen("comando.txt", "r");
+    scanf("%s", comandoSQL);
+    FILE *arqComandos = fopen(comandoSQL, "r");
     if(!arqComandos){
         printf("arquivo nao localizado");
         return 0;
