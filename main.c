@@ -329,6 +329,57 @@ int main(int argc, char *argv[]){
                 }else{
                     if(strcmp(token,"SELECT")==0){
                         //INICIAR SELECAO
+                        
+                        char saida[50];
+                        strcpy(saida,"comandoAlgebra");
+                        FILE *arqAlgebra = fopen(saida, "wt");
+                        
+                        token = strtok(NULL, " ");
+                        if(strcmp(token,"*")==0){
+                        	char aux1[100];
+                        	if(fgets(aux1, sizeof(aux1), arqComandos)){
+                        			token = strtok(aux1, " ");
+                        			if(strcmp(token,"FROM")==0){
+                        				token = strtok(NULL, " ");
+                        				char relA[20];
+                        				strcpy(relA,token);
+                        				
+                        				//testa se existe join
+                        				token = strtok(NULL, " ");
+                        				if(token){
+                        					//existe join
+                        				}
+                        				else{
+                        					//verifica se existe WHERE
+                        					char aux2[100];
+                        					if(fgets(aux2, sizeof(aux2), arqComandos)){
+                        						token = strtok(aux2, " ");
+                        						if(strcmp(token,"WHERE")==0){
+                        							char *atr = strtok(NULL, "=<>");
+                        							char *val = strtok(NULL, "=<>");
+                   									
+                   									
+                   									char comando[100]; //vai concatenar td
+                   									
+                   									
+                   									fprintf(saida,"%s", comando);
+                        							
+                        							
+                        							// como deve ficar salvo selecao(relA,atr, char *op,val, char *saida)
+                        						}
+                        					}
+                        					else{
+                        						imprimeTabela(relA); //o resultado e a propria tabela
+                        					}
+                        				}
+                        			} 
+                        	}	
+                        }
+                        else{
+                        	//lista de atributos
+                        }
+                     	
+                    	fclose("comandoAlgebra");    
                     }
                 }
             }
