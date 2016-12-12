@@ -175,7 +175,7 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
             //se o arquivo estiver vazio só coloca no arquivo
             if(ch==0){
                 FILE *arqDados= fopen(nomeTab, "w");
-                fprintf(arqDados,"%s,%s,%s",valoresSep[0],valoresSep[1],valoresSep[2]);
+                fprintf(arqDados,"%s,%s,%s\n",valoresSep[0],valoresSep[1],valoresSep[2]);
                 fclose(arqDados);
             }
             else{
@@ -255,6 +255,10 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                         fprintf(arqDados,"%s,%s,%s \n",valoresSep[0],valoresSep[1],valoresSep[2]);
                         fclose(arqDados);
                     }
+                    fclose(arqMaior);
+                    fclose(arqMenor);
+                    remove("auxDadosMaior.txt");
+                    remove("auxDadosMenor.txt");
                     fclose(arqDados);
                 }
                 //se ele for o maior insere no final
