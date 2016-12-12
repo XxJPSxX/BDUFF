@@ -13,9 +13,9 @@ void createTable(char *nomeArq, char *nomeTab){
     char *aux = malloc(strlen(nomeTab) + 1);
     strcpy(aux, nomeTab);
     FILE *arqComandos = fopen(nomeArq, "r");
-    strcat(aux,".ctl.txt");
+    strcat(aux,".ctl");
     FILE *arqInfos = fopen(aux, "w");
-    strcat(nomeTab,".dad.txt");
+    strcat(nomeTab,".dad");
     FILE *arqDados= fopen(nomeTab, "w");
     fclose(arqDados);
      //CALCULA GRAU
@@ -95,12 +95,11 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
     char *aux = malloc(strlen(nomeTab) + 1);
     strcpy(aux, nomeTab);
     FILE *arqComandos = fopen(nomeArq, "r");
-    strcat(aux,".ctl.txt");
+    strcat(aux,".ctl");
     FILE *arqInfos = fopen(aux, "r");
     //verifica se a tabela existe
     if(arqInfos){
         //separa os valores numa matriz pra facilitar comparaçao
-
         //pega o grau e cardinalidade e separa os valores numa matriz
         fgets(linha, sizeof(linha), arqInfos);
         token = strtok(linha, ",");
@@ -119,6 +118,7 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
         }
         token=strtok(valores,",");
         i=0;
+        //separa os valores que vem depois do VALUES
         //poe os valores no vetor
         while(token){
             if(token[0]=='(') token++;
@@ -149,7 +149,7 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                     }
                     //se é int
                     else if(!strcmp(token,"I") || !strcmp(token,"I\n")){
-                        if(atoi(valoresSep[i])) {
+                        if(!atoi(valoresSep[i])) {
                                 return;
                         }
                     }
@@ -171,8 +171,7 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                 }
                 i++;
             }
-
-            strcat(nomeTab,".dad.txt");
+            strcat(nomeTab,".dad");
             //se o arquivo estiver vazio só coloca no arquivo
             if(ch==0){
                 FILE *arqDados= fopen(nomeTab, "w");
@@ -197,13 +196,13 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                                 }
                                 //depois de achado o valor da linha da coluna que quero,eu verifico se sao iguais,se sim return
                                 if(strcmp(token,valoresSep[i])==0) return;
-
                         }
                         fclose(arqDados);
                     }
                 }
                 //se prescisar ordernar é prescisa fazer verificação nessa insercao
-                if(prescisaOrdenar){
+                if(prescisaOrdenar)
+                {
                     int salvouAtual=0;
                     int posSalvou=0;
                     char linhaAux[100];
@@ -243,7 +242,6 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                     arqDados= fopen(nomeTab, "w+");
                     arqMaior=fopen("auxDadosMaior.txt","r");
                     arqMenor=fopen("auxDadosMenor.txt","r");
-
                     while(fgets(linhaAux, sizeof(linhaAux), arqMenor)){
                         fprintf(arqDados,"%s",linhaAux);
                     }
@@ -254,7 +252,7 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                     fclose(arqMaior);
                     if(!salvouAtual){
                         FILE *arqDados= fopen(nomeTab, "a");
-                        fprintf(arqDados,"%s,%s,%s\n",valoresSep[0],valoresSep[1],valoresSep[2]);
+                        fprintf(arqDados,"%s,%s,%s \n",valoresSep[0],valoresSep[1],valoresSep[2]);
                         fclose(arqDados);
                     }
                     fclose(arqDados);
@@ -262,7 +260,7 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                 //se ele for o maior insere no final
                 else{
                     FILE *arqDados= fopen(nomeTab, "a");
-                    fprintf(arqDados,"%s,%s,%s\n",valoresSep[0],valoresSep[1],valoresSep[2]);
+                    fprintf(arqDados,"%s,%s,%s \n",valoresSep[0],valoresSep[1],valoresSep[2]);
                     fclose(arqDados);
                 }
             }
@@ -307,21 +305,28 @@ int main(int argc, char *argv[]){
                 }
             }else{
                 if(strcmp(token,"INSERT")==0){
-                    token = strtok(NULL, " ");
-                    if(strcmp(token, " INTO")){
-                        //INICIAR CRIACAO DE TABELA
-                        token = strtok(NULL, " ");
-
-                        if(token){
-                            char *tabela=token;
+                    if(fgets(linha, sizeof(linha), arqComandos)){
+                        token = strtok(linha, " ");
+                        if(strcmp(token, " INTO")){
+                            //INICIAR CRIACAO DE TABELA
                             token = strtok(NULL, " ");
-
-                            if(strcmp(token, " VALUES")){
-                                token = strtok(NULL, " ");
-                                if(token){
-                                    fclose(arqComandos);
-                                    insertTable(comandoSQL, tabela,token);
-                                    return 0;
+                            if(token)
+                            {
+                                char tabela[20];
+                                strcpy(tabela,token);
+                                if(fgets(linha, sizeof(linha), arqComandos))
+                                {
+                                    token = strtok(linha, " ");
+                                    if(strcmp(token, " VALUES"))
+                                    {
+                                        token = strtok(NULL, " ");
+                                        printf("%s",token);
+                                        if(token){
+                                            fclose(arqComandos);
+                                            insertTable(comandoSQL, tabela,token);
+                                            return 0;
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -331,7 +336,7 @@ int main(int argc, char *argv[]){
                         //INICIAR SELECAO
                         
                         char saida[50];
-                        strcpy(saida,"comandoAlgebra");
+                        strcpy(saida,"comandoAlgebra.alg");
                         FILE *arqAlgebra = fopen(saida, "wt");
                         
                         token = strtok(NULL, " ");
@@ -355,21 +360,114 @@ int main(int argc, char *argv[]){
                         					if(fgets(aux2, sizeof(aux2), arqComandos)){
                         						token = strtok(aux2, " ");
                         						if(strcmp(token,"WHERE")==0){
-                        							char *atr = strtok(NULL, "=<>");
-                        							char *val = strtok(NULL, "=<>");
+                        							
+                        							//char *val = strtok(NULL, "=<>");
+                   									
+                   									
+                   									char cond[100], cond_aux[100];
+                   									strcpy(cond,token); //cond guarda a condicao de selecao
+                   									strcpy(cond_aux,cond);
+                   									
+                   									
+                   									char op[3];
+                   									
+                   									if((strstr(cond,"<>") != NULL)){
+                   									 	strcpy(op,"<>");
+                   									}
+                   									else{
+                   										if(strstr(cond,"<=") != NULL){
+                   											strcpy(op,"<=");
+                   										}
+                   										else{	
+                   											if(strstr(cond,">=") != NULL){
+                   												strcpy(op,">=");
+                   											}
+                   											else{
+                   												if(strstr(cond,"=") != NULL){
+                   													strcpy(op,"=");
+                   												}
+                   												else{
+                   													if(strstr(cond,">") != NULL){
+                   														strcpy(op,">");
+                   													}
+                   													else{
+                   														if(strstr(cond,"<") != NULL){
+                   															strcpy(op,"<");
+                   														}
+                   													}
+                   												}
+                   											}
+                   										}
+                   									}
+                   									
+                   									/*
+                   									token = strtok(NULL, "<");
+                   									if(token){
+                   										strcpy(op,"<");
+                   										
+                   										//strcpy(atr,token);
+                   										
+                   										token = strtok(NULL, ">");
+                   										if(token){
+                   											strcat(op,">");
+                   											
+                   											strcpy(val,token);
+                   										}
+                   										else{
+                   											token = strtok(NULL, "=");
+                   											if(token){
+                   												strcat(op,"=");
+                   												
+                   												//strcpy(val,token);
+                   											}
+                   										}
+                   									}
+                   									else{
+                   										token = strtok(NULL, ">");
+                   										if(token){
+                   											strcpy(op,">");
+                   											
+                   											token = strtok(NULL, "=");
+                   											if(token){
+                   												strcat(op,"=");
+                   											}
+                   										}
+                   										else{
+                   											token = strtok(NULL, "=");
+                   											if(token){
+                   												strcat(op,"=");
+                   											}
+                   										}
+                   									
+                   									} */
+                   									
+                   									
+                   									char *atr = strtok(NULL,strcat(op,";"));
+                   									char *val = strtok(NULL,strcat(op,";"));
                    									
                    									
                    									char comando[100]; //vai concatenar td
+                   									strcpy(comando,"S(");
+                   									strcat(comando,relA);
+                   									strcat(comando,",");
+                   									strcat(comando,atr);
+                   									strcat(comando,",");
+                   									strcat(comando,op);
+                   									strcat(comando,",");
+                   									strcat(comando,val);
+                   									strcat(comando,",");
+                   									strcat(comando,"RESULTADO_SELECAO");
+                   									strcat(comando,")");
                    									
-                   									
-                   									fprintf(saida,"%s", comando);
+                   									fprintf(arqAlgebra,"%s", comando);
+                        							
                         							
                         							
                         							// como deve ficar salvo selecao(relA,atr, char *op,val, char *saida)
                         						}
                         					}
                         					else{
-                        						imprimeTabela(relA); //o resultado e a propria tabela
+                        						//imprimeTabela(relA); //o resultado e a propria tabela
                         					}
                         				}
                         			} 
@@ -379,14 +477,23 @@ int main(int argc, char *argv[]){
                         	//lista de atributos
                         }
                      	
-                    	fclose("comandoAlgebra");    
+                    	fclose(arqAlgebra);
+                    	
+                    	//interpreta as instruções de algebra geradas
+                    	arqAlgebra = fopen(saida, "wt");
+                    	char instrucao[100];
+                    	while(fgets(instrucao, sizeof(instrucao), arqAlgebra)){
+                    		interpreta(instrucao);
+                    	}
+                    	fclose(arqAlgebra);
+                    	    
                     }
+                    
                 }
             }
 
         }
         fclose(arqComandos);
-
     }
     return 0;
 }

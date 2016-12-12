@@ -1,4 +1,0 @@
-3,3
-NOME,C
-MATRICULA,C,nn,chv,ord
-CR,I

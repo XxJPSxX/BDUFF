@@ -1,1 +1,0 @@
-CREATE TABLE EMPREGADO (Matricula C nn chv,Nome C,CR I)
