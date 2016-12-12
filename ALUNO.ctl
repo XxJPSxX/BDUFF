@@ -1,0 +1,4 @@
+3,0
+NOME,C
+MATRICULA,C,nn,chv
+CR,I

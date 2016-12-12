@@ -13,9 +13,9 @@ void createTable(char *nomeArq, char *nomeTab){
     char *aux = malloc(strlen(nomeTab) + 1);
     strcpy(aux, nomeTab);
     FILE *arqComandos = fopen(nomeArq, "r");
-    strcat(aux,".ctl.txt");
+    strcat(aux,".ctl");
     FILE *arqInfos = fopen(aux, "w");
-    strcat(nomeTab,".dad.txt");
+    strcat(nomeTab,".dad");
     FILE *arqDados= fopen(nomeTab, "w");
     fclose(arqDados);
      //CALCULA GRAU
@@ -95,12 +95,13 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
     char *aux = malloc(strlen(nomeTab) + 1);
     strcpy(aux, nomeTab);
     FILE *arqComandos = fopen(nomeArq, "r");
-    strcat(aux,".ctl.txt");
+    strcat(aux,".ctl");
     FILE *arqInfos = fopen(aux, "r");
     //verifica se a tabela existe
+    printf("Criou as variaveis\n");
     if(arqInfos){
         //separa os valores numa matriz pra facilitar comparaçao
-
+        printf("Entrou no if");
         //pega o grau e cardinalidade e separa os valores numa matriz
         fgets(linha, sizeof(linha), arqInfos);
         token = strtok(linha, ",");
@@ -119,6 +120,7 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
         }
         token=strtok(valores,",");
         i=0;
+        //separa os valores que vem depois do VALUES
         //poe os valores no vetor
         while(token){
             if(token[0]=='(') token++;
@@ -130,6 +132,7 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
             i++;
             token=strtok(NULL,",");
         }
+        printf("Separou os valores\n");
         //se a quantidade de vlaores é correta ele continua a verificacao
         if(i==grau){
             i=0;
@@ -139,6 +142,8 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                 token = strtok(linha, ",");
                 token = strtok(NULL, ",");
                 while(token){
+                    printf("token: %s",token);
+                    printf("Valor: %s",valoresSep[i]);
                     //se é caracter
                     if(!strcmp(token,"C") || !strcmp(token,"C\n")){
                         if((valoresSep[i][0]!='"' || valoresSep[i][strlen(valoresSep[i])-1]!='"')){
@@ -149,7 +154,7 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                     }
                     //se é int
                     else if(!strcmp(token,"I") || !strcmp(token,"I\n")){
-                        if(atoi(valoresSep[i])) {
+                        if(!atoi(valoresSep[i])) {
                                 return;
                         }
                     }
@@ -171,8 +176,8 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                 }
                 i++;
             }
-
-            strcat(nomeTab,".dad.txt");
+            printf("Conferiu os dados");
+            strcat(nomeTab,".dad");
             //se o arquivo estiver vazio só coloca no arquivo
             if(ch==0){
                 FILE *arqDados= fopen(nomeTab, "w");
@@ -197,7 +202,6 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                                 }
                                 //depois de achado o valor da linha da coluna que quero,eu verifico se sao iguais,se sim return
                                 if(strcmp(token,valoresSep[i])==0) return;
-
                         }
                         fclose(arqDados);
                     }
@@ -240,10 +244,11 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                     fclose(arqMenor);
                     fclose(arqDados);
                     //junto os dois arquivos
+                    printf("Abrindo os arquivos\n");
                     arqDados= fopen(nomeTab, "w+");
                     arqMaior=fopen("auxDadosMaior.txt","r");
                     arqMenor=fopen("auxDadosMenor.txt","r");
-
+                    printf("Começou a juntar os arquivos");
                     while(fgets(linhaAux, sizeof(linhaAux), arqMenor)){
                         fprintf(arqDados,"%s",linhaAux);
                     }
@@ -261,6 +266,7 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                 }
                 //se ele for o maior insere no final
                 else{
+                    printf("Caiu no else");
                     FILE *arqDados= fopen(nomeTab, "a");
                     fprintf(arqDados,"%s,%s,%s\n",valoresSep[0],valoresSep[1],valoresSep[2]);
                     fclose(arqDados);
@@ -307,11 +313,12 @@ int main(int argc, char *argv[]){
                 }
             }else{
                 if(strcmp(token,"INSERT")==0){
+                    printf("Entrou no insert");
                     token = strtok(NULL, " ");
                     if(strcmp(token, " INTO")){
                         //INICIAR CRIACAO DE TABELA
                         token = strtok(NULL, " ");
-
+                        printf("Leu into");
                         if(token){
                             char *tabela=token;
                             token = strtok(NULL, " ");
@@ -319,6 +326,7 @@ int main(int argc, char *argv[]){
                             if(strcmp(token, " VALUES")){
                                 token = strtok(NULL, " ");
                                 if(token){
+                                    printf("Entrou no values");
                                     fclose(arqComandos);
                                     insertTable(comandoSQL, tabela,token);
                                     return 0;
