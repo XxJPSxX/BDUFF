@@ -231,7 +231,7 @@ void selecao(char *relacao, char *atr, char *op, char *val, char *saida)
 	
 	//ajusta o nome do arquvio que será aberto
 	aux = geraNomeArq(relacao,".ctl");
-	FILE *frelacao = fopen(aux,"rd");
+	FILE *frelacao = fopen(aux,"rt");
 	free(aux);
 	if(!frelacao)exit(1);
 	//ajusta o nome do arquvio que será aberto
@@ -572,7 +572,6 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 
 void interpreta(char *inst)
 {
-	printf("%s",inst);
 	//na primeira leitura, a variavel string vai conter a operação que será realizada
 	char *strings = strtok(inst,"(,)");
 	if(!strcmp(strings,"S"))

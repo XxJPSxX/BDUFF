@@ -345,16 +345,37 @@ int main(int argc, char *argv[]){
                              
                         char result[50];
                         strcpy(result,token);
-                        if(strcmp(result,"*") == 0){
+                        if(1)
+                        {//strcmp(result,"*") == 0)
+                        	char atributos[100];
+						   	strcpy(atributos,result);
                         	char aux1[100];
-                        	printf("antes do arq comandos");
+                        	
+                        	char relA[20];
+                        	char arqProj[20];
+                        	int nAtributos=0;
+                        	
+                        	if(strcmp(atributos,"*")){
+                        		nAtributos = 1;
+                        		token = strtok(NULL,",\n");
+                        		while(token){
+                        			strcat(atributos,token);
+                        			nAtributos++;
+                        			token = strtok(NULL,",\n");
+                        		}	
+                        	}
+                        	
+                        	
                         	if(fgets(aux1, sizeof(aux1), arqComandos)){
                         			token = strtok(aux1, " ");
                         			printf("%s",token);
                         			if(strcmp(token,"FROM")==0){
                         				token = strtok(NULL, " ");
-                        				char relA[20];
+                        				//char relA[20];
                         				strcpy(relA,token);
+                        				
+                        				strcpy(arqProj,relA);
+                        				
                         				//testa se existe join
                         				token = strtok(NULL, " ");
                         				if(token){
@@ -362,13 +383,14 @@ int main(int argc, char *argv[]){
                         				}       
                         				else{
                         					//verifica se existe WHERE
+                        					
                         					char aux2[100];
                         					if(fgets(aux2, sizeof(aux2), arqComandos)){
                         						token = strtok(aux2, " ");
                         						if(strcmp(token,"WHERE")==0){
                         							
                         							//char *val = strtok(NULL, "=<>");
-                   									
+                        							
                    									token = strtok(NULL, " ");
                    									
                    									char cond[100], cond_aux[100];
@@ -425,15 +447,44 @@ int main(int argc, char *argv[]){
                    									strcat(comando,val);
                    									strcat(comando,",");
                    									strcat(comando,"RESULTADO_SELECAO");
+                   									
+                   									strcpy(arqProj,"RESULTADO_SELECAO");
+                   									
                    									strcat(comando,")");
                    									
                    									//printf("%s",comando);
-                   									fprintf(arqAlgebra,"%s", comando);
+                   									fprintf(arqAlgebra,"%s\n", comando);
+                   									
+                        							interpreta(comando);
                         							
-                        						}
                         					}
                         					else{
                         						//imprimeTabela(relA); //o resultado e a propria tabela
+                        					}
+                        					
+                        					
+                        					if(strcmp(atributos,"*"))
+                        					{
+                        						//faz projeção
+                        						char comando[100];
+                        						strcpy(comando,"P(");
+                        						strcat(comando,arqProj);
+                        						strcat(comando,",");
+                        						//transforma int para string
+                        						char nAtrib[10];
+                        						sprintf(nAtrib, "%d", nAtributos);
+                        						strcat(comando,nAtrib);
+                        						strcat(comando,",");
+                        						strcat(comando,atributos);
+                        						strcat(comando,",");
+                        						strcat(comando,"RESULTADO_FINAL");
+                        						strcat(comando,")");
+                        						//P(arqProj,nAtributos,atributos,"RESULTADO_FINAL");
+                        						fprintf(arqAlgebra,"%s\n",comando);
+                        						
+                        						
+                        						interpreta(comando);
+                        								
                         					}
                         				}
                         			} 
@@ -441,20 +492,10 @@ int main(int argc, char *argv[]){
                         }
                         else{
                         	//lista de atributos
+                        	//projecao(char *relacao, char *n, char *lista, char *saida)
                         	
                         }
-                     	
                     	fclose(arqAlgebra);
-                    	
-                    	//interpreta as instruções de algebra geradas
-                    	arqAlgebra = fopen(saida, "rt");
-                    	char instrucao[100];
-                    	while(fgets(instrucao, sizeof(instrucao), arqAlgebra)){
-                    		interpreta(instrucao);
-                    		printf("fiz algo");
-                    	}
-                    	fclose(arqAlgebra);
-                    	    
                     }
                     
                 }
@@ -464,4 +505,5 @@ int main(int argc, char *argv[]){
         fclose(arqComandos);
     }
     return 0;
+    }
 }
