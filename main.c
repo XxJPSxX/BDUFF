@@ -61,7 +61,6 @@ void createTable(char *nomeArq, char *nomeTab){
             token = strtok(NULL, " ");
             if(token[strlen(token)-1] == ')'){
                 //Acabou comando
-                printf("TESTE0\n");
                 token[strlen(token)-1]=0;
                 fprintf(arqInfos,",%s",token);
                 printf("Escrevi: %s\n", token);
@@ -70,12 +69,10 @@ void createTable(char *nomeArq, char *nomeTab){
             if(token[strlen(token)-2] == ','){
                 token[strlen(token)-2]=0;
                 strcat(token, "\n");
-                printf("TESTE1\n");
                 fprintf(arqInfos,",%s",token);//Escreve nn
                 printf("Escrevi: %s\n", token);
                 //Acabou essa linha
             }else{
-                printf("TESTE2\n");
                 fprintf(arqInfos,",%s",token);//Escreve nn
                 printf("Escrevi: %s\n", token);
                 token = strtok(NULL, " ");
