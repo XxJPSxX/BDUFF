@@ -40,6 +40,7 @@ void createTable(char *nomeArq, char *nomeTab){
         token = strtok(linha, " ");
         fprintf(arqInfos,"%s,",token);
         token = strtok(NULL, " ");
+
         if(token[strlen(token)-1] == ')'){
             token[strlen(token)-1] = 0;
             fprintf(arqInfos,"%s",token);
@@ -55,7 +56,7 @@ void createTable(char *nomeArq, char *nomeTab){
             token = strtok(NULL, " ");
             fprintf(arqInfos,"%s,",token);
             token = strtok(NULL, " ");
-            if(token[strlen(token)-2] == ')'){
+            if(token[strlen(token)-1] == ')'){
                 //acabou o comando
                 return;
             }
@@ -70,7 +71,7 @@ void createTable(char *nomeArq, char *nomeTab){
                 token[strlen(token)-2] = 0;
                 fprintf(arqInfos,"%s\n",token);
             }
-        }
+        }*/
     }
     fclose(arqComandos);
     fclose(arqInfos);
@@ -95,6 +96,7 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
     char *aux = malloc(strlen(nomeTab) + 1);
     strcpy(aux, nomeTab);
     FILE *arqComandos = fopen(nomeArq, "r");
+    aux[strlen(aux)-1] = 0;
     strcat(aux,".ctl");
     FILE *arqInfos = fopen(aux, "r");
     //verifica se a tabela existe
@@ -171,6 +173,8 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                 }
                 i++;
             }
+
+            nomeTab[strlen(nomeTab)-1] = 0;
             strcat(nomeTab,".dad");
             //se o arquivo estiver vazio só coloca no arquivo
             if(ch==0){
@@ -277,6 +281,7 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
         ch++;
         fprintf(arqInfos,"%d,%d",grau,ch);
     }
+    printf("Insercao concluida");
     fclose(arqInfos);
     fclose(arqComandos);
 }
@@ -302,15 +307,16 @@ int main(int argc, char *argv[]){
                     token = strtok(NULL, " ");
                     if(token){
                         fclose(arqComandos);
+                        printf("%s",token);
                         createTable(comandoSQL, token);
                         return 0;
                     }
                 }
             }else{
-                if(strcmp(token,"INSERT")==0){
+                if(strcmp(token,"INSERT\n")==0){
                     if(fgets(linha, sizeof(linha), arqComandos)){
                         token = strtok(linha, " ");
-                        if(strcmp(token, " INTO")){
+                        if(strcmp(token, "INTO")==0){
                             //INICIAR CRIACAO DE TABELA
                             token = strtok(NULL, " ");
                             if(token)
@@ -320,7 +326,7 @@ int main(int argc, char *argv[]){
                                 if(fgets(linha, sizeof(linha), arqComandos))
                                 {
                                     token = strtok(linha, " ");
-                                    if(strcmp(token, " VALUES"))
+                                    if(strcmp(token, "VALUES")==0)
                                     {
                                         token = strtok(NULL, " ");
                                         if(token){
