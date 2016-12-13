@@ -1,5 +1,0 @@
-CREATE TABLE TESTE1 (
-MATRICULA I,
-nome C nn chv,
-BADADD C,
-CR I nn)

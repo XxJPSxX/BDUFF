@@ -37,130 +37,39 @@ void createTable(char *nomeArq, char *nomeTab){
     //ENQUAcNTO EXISTIR UMA LINHA NOVA
     while(fgets(linha, sizeof(linha), arqComandos)){
         //LÊ E ESCREVE NOME DO ATRIBUTO
-        printf("LINHA: %s\n", linha);
         token = strtok(linha, " ");
-        fprintf(arqInfos,"%s",token);//Escreve nome do atributo
-        printf("Escrevi: %s\n", token);
+        fprintf(arqInfos,"%s,",token);
         token = strtok(NULL, " ");
-        if(token[strlen(token)-1] == ')'){//tirei o caso do -2, ver se da erro
-                //Acabou comando
-                token[strlen(token)-1]=0;
-                fprintf(arqInfos,",%s",token);//Escreve tipo do atributo
-                printf("Escrevi: %s\n", token);
-                break;
-        }
-        if(token[strlen(token)-2] == ','){
-            token[strlen(token)-2]=0;
-            strcat(token, "\n");
-            fprintf(arqInfos,",%s",token);//Escreve tipo do atributo
-            printf("Escrevi: %s\n", token);
-            //Acabou essa linha
-        }else{
-            fprintf(arqInfos,",%s",token);//Escreve tipo do atributo
-            printf("Escrevi: %s\n", token);
-            token = strtok(NULL, " ");
-            if(token[strlen(token)-1] == ')'){
-                //Acabou comando
-                printf("TESTE0\n");
-                token[strlen(token)-1]=0;
-                fprintf(arqInfos,",%s",token);
-                printf("Escrevi: %s\n", token);
-                break;
-            }
-            if(token[strlen(token)-2] == ','){
-                token[strlen(token)-2]=0;
-                strcat(token, "\n");
-                printf("TESTE1\n");
-                fprintf(arqInfos,",%s",token);//Escreve nn
-                printf("Escrevi: %s\n", token);
-                //Acabou essa linha
-            }else{
-                printf("TESTE2\n");
-                fprintf(arqInfos,",%s",token);//Escreve nn
-                printf("Escrevi: %s\n", token);
-                token = strtok(NULL, " ");
-                if(token[strlen(token)-1] == ')'){
-                    //Acabou comando
-                    token[strlen(token)-1]=0;
-                    fprintf(arqInfos,",%s",token);
-                    printf("Escrevi: %s\n", token);
-                    break;
-                }
-                if(token[strlen(token)-2] == ','){
-                token[strlen(token)-2]=0;
-                strcat(token, "\n");
-                fprintf(arqInfos,",%s",token);//Escreve chv
-                printf("Escrevi: %s\n", token);
-                //Acabou essa linha
-                }else{
-                    fprintf(arqInfos,",%s",token);//Escreve chv
-                    printf("Escrevi: %s\n", token);
-                    token = strtok(NULL, " ");
-                    if(token[strlen(token)-1] == ')'){
-                        //Acabou comando
-                        token[strlen(token)-1]=0;
-                        fprintf(arqInfos,",%s",token);
-                        printf("Escrevi: %s\n", token);
-                        break;
-                    }
-                    if(token[strlen(token)-2] == ','){
-                        token[strlen(token)-2]=0;
-                        strcat(token, "\n");
-                        fprintf(arqInfos,",%s",token);//Escreve ord
-                        printf("Escrevi: %s", token);
-                        //Acabou essa linha
-                    }
-                }
 
-            }
-        }
-
-        /*
         if(token[strlen(token)-1] == ')'){
-            printf("TESTE0\n");
             token[strlen(token)-1] = 0;
             fprintf(arqInfos,"%s",token);
             //acabou o comando SQL
             return;
         }
-        printf("TESTE1\n");
         if(token[strlen(token)-2] == ','){
             //TIRA VIRGULA E \n
             token[strlen(token)-2] = 0;
             fprintf(arqInfos,"%s\n",token);
-            printf("TESTE2\n");
         }else{
-            printf("AGORA1: %s", token);
-            if(token[strlen(token)-2] == ')'){
-                token[strlen(token)-2] = 0;
-                printf("ACABOU!!!");
-                fprintf(arqInfos,"%s",token);
-                return;
-            }
             fprintf(arqInfos,"%s,",token);
             token = strtok(NULL, " ");
-            printf("AGORA2: %s", token);
             fprintf(arqInfos,"%s,",token);
             token = strtok(NULL, " ");
-            printf("TESTE3\n");
-            if(!token){
+            if(token[strlen(token)-1] == ')'){
                 //acabou o comando
-                printf("TESTE4\n");
                 return;
             }
-            printf("TESTE4,1\n");
             if(token[strlen(token)-2] == ','){
                 //TIRA VIRGULA E \n
                 token[strlen(token)-2] = 0;
                 fprintf(arqInfos,"%s\n",token);
-                printf("TESTE5\n");
             }else{
                 fprintf(arqInfos,"%s,",token);
                 //É ORDENADO!!
                 token = strtok(NULL, " ");
                 token[strlen(token)-2] = 0;
                 fprintf(arqInfos,"%s\n",token);
-                printf("TESTE6\n");
             }
         }*/
     }
@@ -187,6 +96,7 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
     char *aux = malloc(strlen(nomeTab) + 1);
     strcpy(aux, nomeTab);
     FILE *arqComandos = fopen(nomeArq, "r");
+    aux[strlen(aux)-1] = 0;
     strcat(aux,".ctl");
     FILE *arqInfos = fopen(aux, "r");
     //verifica se a tabela existe
@@ -263,6 +173,8 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                 }
                 i++;
             }
+
+            nomeTab[strlen(nomeTab)-1] = 0;
             strcat(nomeTab,".dad");
             //se o arquivo estiver vazio só coloca no arquivo
             if(ch==0){
@@ -361,14 +273,21 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                 }
             }
 
+			//aumenta a cardinalidade
+			arqInfos = fopen(aux, "r+");
+			ch++;
+			fprintf(arqInfos,"%d,%d",grau,ch);
         }
+		else{
+			printf("Erro na quantidade de valores inseridos");
+		}
         fclose(arqInfos);
         fclose(arqComandos);
-        //aumenta a cardinalidade
-        arqInfos = fopen(aux, "r+");
-        ch++;
-        fprintf(arqInfos,"%d,%d",grau,ch);
     }
+	else{
+		printf("Erro de arquivo");
+    }
+    printf("Insercao concluida");
     fclose(arqInfos);
     fclose(arqComandos);
 }
@@ -394,19 +313,16 @@ int main(int argc, char *argv[]){
                     token = strtok(NULL, " ");
                     if(token){
                         fclose(arqComandos);
+                        printf("%s",token);
                         createTable(comandoSQL, token);
                         return 0;
                     }
                 }
             }else{
-                printf("TESTE0");
                 if(strcmp(token,"INSERT\n")==0){
-                    printf("TESTE1");
-                    if(fgets(linha, sizeof(linha),arqComandos)){
-                        printf("TESTE2");
+                    if(fgets(linha, sizeof(linha), arqComandos)){
                         token = strtok(linha, " ");
-                        if(strcmp(token, "INTO") == 0){
-                            printf("entrei no insert 2");
+                        if(strcmp(token, "INTO")==0){
                             //INICIAR CRIACAO DE TABELA
                             token = strtok(NULL, " ");
                             if(token)
@@ -416,14 +332,11 @@ int main(int argc, char *argv[]){
                                 if(fgets(linha, sizeof(linha), arqComandos))
                                 {
                                     token = strtok(linha, " ");
-                                    printf("entrei no insert 1");
-                                    if(strcmp(token, "VALUES "))
+                                    if(strcmp(token, "VALUES")==0)
                                     {
-                                        printf("TESTE3");
                                         token = strtok(NULL, " ");
                                         if(token){
                                             fclose(arqComandos);
-                                            printf("entrei no insert");
                                             insertTable(comandoSQL, tabela,token);
                                             return 0;
                                         }
@@ -454,24 +367,7 @@ int main(int argc, char *argv[]){
                         				//testa se existe join
                         				token = strtok(NULL, " ");
                         				if(token){
-                                            char relB[20];
-                                            //Acha relacao B
-                                            token = strtok(NULL," ");
-                                            strcpy(relB, token);
-                                            token = strtok(NULL," ");
-                                            if(!strcmp(token, "ON")){
-
-                                                token = strtok(NULL," ");
-                                                //Aqui o token eh igual a condicao
-                                                char atributoA[20];
-                                                char atributoB[20];
-                                                //token = strtok(NULL, "=");
-                                                printf("Esse é token: %s\n", token);
-                                            }else{
-                                                printf("ERRO: faltou o ON!!!");
-                                            }
-
-                                           // char *join = strtok(token,)
+                        					//existe join
                         				}
                         				else{
                         					//verifica se existe WHERE

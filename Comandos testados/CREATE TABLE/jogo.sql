@@ -1,4 +1,0 @@
-CREATE TABLE JOGO (
-ID I nn chv,
-NOME C nn,
-ANO_CRIACAO I nn)
