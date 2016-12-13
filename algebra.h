@@ -165,17 +165,16 @@ char *geraNomeArq(char *rel, char *extensao)
 
 
 int compara(char *op, char *val1, char *val2)
-{
-	if(val1[strlen(val1) - 1] == '\n')
-	{
-		val1[strlen(val1) - 1] = '0';
-	} 
-	if(val2[strlen(val2) - 1] == '\n')
-	{
-		val1[strlen(val2) - 1] = '0';
-	} 
+{	
+	//tira o \n dos operadores
+	char *newline = strchr(val2, '\n' );
+	if ( newline ) *newline = 0;
 	
-	printf("%s %s",val1,val2);
+	newline = strchr(val1, '\n' );
+	if ( newline ) *newline = 0;
+	///
+	
+	
 	if(strcmp(op,"<") == 0)
 	{
 		return (strcmp(val1,val2) > 0);
@@ -184,13 +183,13 @@ int compara(char *op, char *val1, char *val2)
 	if(strcmp(op,">") == 0)
 	{
 		int i = strcmp(val2,val1);
-		printf("valor de %s %s: %d\n",val2,val1,i);
 		return (strcmp(val2,val1) > 0);
 		
 	}
 	if(strcmp(op,"=") == 0)
 	{		
 		int i = strcmp(val1,val2);
+		printf("%s\n",val1);
 		if(i == 0) return 1;
 		return 0;
 	}
@@ -576,26 +575,37 @@ void interpreta(char *inst)
 	char *strings = strtok(inst,"(,)");
 	if(!strcmp(strings,"S"))
 	{
-		char *rel = strtok(NULL,"(,)");
-		char *atributo = strtok(NULL,"(,)");
-		char *operador = strtok(NULL,"(,)");
-		char *valor = strtok(NULL,"(,)");
-		char *saida = strtok(NULL,"(,)");
-		selecao(rel,atributo,operador,valor,saida);
+		char rel[15];
+		strcpy(rel,strtok(NULL,"(,)"));
+		char atributo[15];
+		strcpy(atributo,strtok(NULL,"(,)"));
+		char operador[2];
+		strcpy(operador,strtok(NULL,"(,)"));
+		char val[50];
+		strcpy(val,strtok(NULL,"(,)"));
+		char saida[30];
+		strcat(saida,strtok(NULL,"(,)"));
+		selecao(rel,atributo,operador,val,saida);
 	}
 	else if(!strcmp(strings,"J"))
 	{
-		char *relA = strtok(NULL,"(,)");
-		char *relB = strtok(NULL,"(,)");
-		char *comp = strtok(NULL,"(,)");
-		char *saida = strtok(NULL,"(,)");
+		char relA[50];
+		strcpy(relA,strtok(NULL,"(,)"));
+		char relB[50];
+		strcpy(relB,strtok(NULL,"(,)"));
+		char comp[50];
+		strcpy(comp,strtok(NULL,"(,)"));
+		char saida[50];
+		strcpy(saida,strtok(NULL,"(,)"));
 		juncao(relA,relB,comp,saida);
 	}
 	else if(!strcmp(strings,"P"))
 	{
-		char *relacao = strtok(NULL,"(,)");
-		char *n = strtok(NULL,"(,)");
+		char relacao[50];
+		strcpy(relacao,strtok(NULL,"(,)"));
 		
+		char n[5];
+		strcpy(n,strtok(NULL,"(,)"));
 		//converte o numero de atributos para saber quantos atributos serão lidos
 		int num = atoi(n);
 		int i;
@@ -607,7 +617,8 @@ void interpreta(char *inst)
 			strcat(lista,strtok(NULL,"(,)"));
 		}
 		
-		char *saida = strtok(NULL,"(,)");
+		char saida[50];
+		strcpy(saida,strtok(NULL,"(,)"));
 		projecao(relacao,n,lista,saida);
 		free(lista);
 	}
