@@ -1,4 +1,0 @@
-CREATE TABLE ALUNO (
-MATRICULA I nn chv ord,
-NOME C nn,
-CR I)
