@@ -114,55 +114,6 @@ void createTable(char *nomeArq, char *nomeTab){
 
             }
         }
-
-        /*
-        if(token[strlen(token)-1] == ')'){
-            printf("TESTE0\n");
-            token[strlen(token)-1] = 0;
-            fprintf(arqInfos,"%s",token);
-            //acabou o comando SQL
-            return;
-        }
-        printf("TESTE1\n");
-        if(token[strlen(token)-2] == ','){
-            //TIRA VIRGULA E \n
-            token[strlen(token)-2] = 0;
-            fprintf(arqInfos,"%s\n",token);
-            printf("TESTE2\n");
-        }else{
-            printf("AGORA1: %s", token);
-            if(token[strlen(token)-2] == ')'){
-                token[strlen(token)-2] = 0;
-                printf("ACABOU!!!");
-                fprintf(arqInfos,"%s",token);
-                return;
-            }
-            fprintf(arqInfos,"%s,",token);
-            token = strtok(NULL, " ");
-            printf("AGORA2: %s", token);
-            fprintf(arqInfos,"%s,",token);
-            token = strtok(NULL, " ");
-            printf("TESTE3\n");
-            if(!token){
-                //acabou o comando
-                printf("TESTE4\n");
-                return;
-            }
-            printf("TESTE4,1\n");
-            if(token[strlen(token)-2] == ','){
-                //TIRA VIRGULA E \n
-                token[strlen(token)-2] = 0;
-                fprintf(arqInfos,"%s\n",token);
-                printf("TESTE5\n");
-            }else{
-                fprintf(arqInfos,"%s,",token);
-                //É ORDENADO!!
-                token = strtok(NULL, " ");
-                token[strlen(token)-2] = 0;
-                fprintf(arqInfos,"%s\n",token);
-                printf("TESTE6\n");
-            }
-        }*/
     }
     fclose(arqComandos);
     fclose(arqInfos);
