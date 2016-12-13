@@ -273,13 +273,19 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                 }
             }
 
+			//aumenta a cardinalidade
+			arqInfos = fopen(aux, "r+");
+			ch++;
+			fprintf(arqInfos,"%d,%d",grau,ch);
         }
+		else{
+			printf("Erro na quantidade de valores inseridos");
+		}
         fclose(arqInfos);
         fclose(arqComandos);
-        //aumenta a cardinalidade
-        arqInfos = fopen(aux, "r+");
-        ch++;
-        fprintf(arqInfos,"%d,%d",grau,ch);
+    }
+	else{
+		printf("Erro de arquivo");
     }
     printf("Insercao concluida");
     fclose(arqInfos);
