@@ -37,41 +37,80 @@ void createTable(char *nomeArq, char *nomeTab){
     //ENQUAcNTO EXISTIR UMA LINHA NOVA
     while(fgets(linha, sizeof(linha), arqComandos)){
         //LÊ E ESCREVE NOME DO ATRIBUTO
+        printf("LINHA: %s\n", linha);
         token = strtok(linha, " ");
-        fprintf(arqInfos,"%s,",token);
+        fprintf(arqInfos,"%s",token);//Escreve nome do atributo
+        printf("Escrevi: %s\n", token);
         token = strtok(NULL, " ");
-
-        if(token[strlen(token)-1] == ')'){
-            token[strlen(token)-1] = 0;
-            fprintf(arqInfos,"%s",token);
-            //acabou o comando SQL
-            return;
+        if(token[strlen(token)-1] == ')'){//tirei o caso do -2, ver se da erro
+                //Acabou comando
+                token[strlen(token)-1]=0;
+                fprintf(arqInfos,",%s",token);//Escreve tipo do atributo
+                printf("Escrevi: %s\n", token);
+                break;
         }
         if(token[strlen(token)-2] == ','){
-            //TIRA VIRGULA E \n
-            token[strlen(token)-2] = 0;
-            fprintf(arqInfos,"%s\n",token);
+            token[strlen(token)-2]=0;
+            strcat(token, "\n");
+            fprintf(arqInfos,",%s",token);//Escreve tipo do atributo
+            printf("Escrevi: %s\n", token);
+            //Acabou essa linha
         }else{
-            fprintf(arqInfos,"%s,",token);
-            token = strtok(NULL, " ");
-            fprintf(arqInfos,"%s,",token);
+            fprintf(arqInfos,",%s",token);//Escreve tipo do atributo
+            printf("Escrevi: %s\n", token);
             token = strtok(NULL, " ");
             if(token[strlen(token)-1] == ')'){
-                //acabou o comando
-                return;
+                //Acabou comando
+                token[strlen(token)-1]=0;
+                fprintf(arqInfos,",%s",token);
+                printf("Escrevi: %s\n", token);
+                break;
             }
             if(token[strlen(token)-2] == ','){
-                //TIRA VIRGULA E \n
-                token[strlen(token)-2] = 0;
-                fprintf(arqInfos,"%s\n",token);
+                token[strlen(token)-2]=0;
+                strcat(token, "\n");
+                fprintf(arqInfos,",%s",token);//Escreve nn
+                printf("Escrevi: %s\n", token);
+                //Acabou essa linha
             }else{
-                fprintf(arqInfos,"%s,",token);
-                //É ORDENADO!!
+                fprintf(arqInfos,",%s",token);//Escreve nn
+                printf("Escrevi: %s\n", token);
                 token = strtok(NULL, " ");
-                token[strlen(token)-2] = 0;
-                fprintf(arqInfos,"%s\n",token);
+                if(token[strlen(token)-1] == ')'){
+                    //Acabou comando
+                    token[strlen(token)-1]=0;
+                    fprintf(arqInfos,",%s",token);
+                    printf("Escrevi: %s\n", token);
+                    break;
+                }
+                if(token[strlen(token)-2] == ','){
+                token[strlen(token)-2]=0;
+                strcat(token, "\n");
+                fprintf(arqInfos,",%s",token);//Escreve chv
+                printf("Escrevi: %s\n", token);
+                //Acabou essa linha
+                }else{
+                    fprintf(arqInfos,",%s",token);//Escreve chv
+                    printf("Escrevi: %s\n", token);
+                    token = strtok(NULL, " ");
+                    if(token[strlen(token)-1] == ')'){
+                        //Acabou comando
+                        token[strlen(token)-1]=0;
+                        fprintf(arqInfos,",%s",token);
+                        printf("Escrevi: %s\n", token);
+                        break;
+                    }
+                    if(token[strlen(token)-2] == ','){
+                        token[strlen(token)-2]=0;
+                        strcat(token, "\n");
+                        fprintf(arqInfos,",%s",token);//Escreve ord
+                        printf("Escrevi: %s", token);
+                        //Acabou essa linha
+                    }
+                }
+
             }
-        }*/
+        }
     }
     fclose(arqComandos);
     fclose(arqInfos);
