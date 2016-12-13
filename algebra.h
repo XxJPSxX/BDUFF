@@ -549,6 +549,7 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 		char linhaSaida[50];	
 		while(auxAtr)
 		{
+			strcpy(linhaSaida,"");
 			while(i < auxAtr->indice) 
 			{
 				i++;
