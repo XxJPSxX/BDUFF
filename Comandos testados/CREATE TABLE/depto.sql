@@ -1,4 +1,4 @@
 CREATE TABLE DEPTO (
-NUM I nn chv ord,
-NOME C nn,
-AREA C)
+NUM INTEGER nn chv ord,
+NOME STRING nn,
+AREA STRING)

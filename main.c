@@ -46,19 +46,41 @@ void createTable(char *nomeArq, char *nomeTab){
         if(token[strlen(token)-1] == ')'){//tirei o caso do -2, ver se da erro
                 //Acabou comando
                 token[strlen(token)-1]=0;
-                fprintf(arqInfos,",%s",token);//Escreve tipo do atributo
-                printf("Escrevi: %s\n", token);
+                if(strcmp(token, "STRING")==0){
+                    char tipo = 'C';
+                    fprintf(arqInfos,",%c", tipo);//Escreve tipo do atributo
+                    printf("Escrevi: %c\n", tipo);
+                }else{
+                    char tipo = 'I';
+                    fprintf(arqInfos,",%c", tipo);//Escreve tipo do atributo
+                    printf("Escrevi: %c\n", tipo);
+                }
+
                 break;
         }
         if(token[strlen(token)-2] == ','){
             token[strlen(token)-2]=0;
             strcat(token, "\n");
-            fprintf(arqInfos,",%s",token);//Escreve tipo do atributo
-            printf("Escrevi: %s\n", token);
+            if(strcmp(token, "STRING\n")==0){
+                char tipo = 'C';
+                fprintf(arqInfos,",%c\n", tipo);//Escreve tipo do atributo
+                printf("Escrevi: %c\n", tipo);
+            }else{
+                char tipo = 'I';
+                fprintf(arqInfos,",%c\n", tipo);//Escreve tipo do atributo
+                printf("Escrevi: %c\n", tipo);
+            }
             //Acabou essa linha
         }else{
-            fprintf(arqInfos,",%s",token);//Escreve tipo do atributo
-            printf("Escrevi: %s\n", token);
+            if(strcmp(token, "STRING")==0){
+                char tipo = 'C';
+                fprintf(arqInfos,",%c", tipo);//Escreve tipo do atributo
+                printf("Escrevi: %c\n", tipo);
+            }else{
+                char tipo = 'I';
+                fprintf(arqInfos,",%c", tipo);//Escreve tipo do atributo
+                printf("Escrevi: %c\n", tipo);
+            }
             token = strtok(NULL, " ");
             if(token[strlen(token)-1] == ')'){
                 //Acabou comando
@@ -433,7 +455,7 @@ int main(int argc, char *argv[]){
 
                         char result[50];
                         strcpy(result,token);
-                        
+
                         //strcmp(result,"*") == 0)
                         char atributos[100];
 						strcpy(atributos,result);
@@ -475,8 +497,8 @@ int main(int argc, char *argv[]){
                         				if(strcmp(token,"ON")==0){
                         					token = strtok(NULL, " )");
                         					strcpy(cond,token);
-                        						
-                        							
+
+
                         					//faltam os tratamentos pra tirar \n e coisas assim
                         					char comando[100]; //vai concatenar td
                    							strcpy(comando,"J(");
@@ -494,7 +516,7 @@ int main(int argc, char *argv[]){
                    							fprintf(arqAlgebra,"%s\n", comando);
 
                         					interpreta(comando);
-                        							
+
 										}
 										else{
 											printf("comando invalido");
@@ -504,7 +526,7 @@ int main(int argc, char *argv[]){
 										printf("comando invalido");
 									}
                         		}
-                        				
+
                         		//verifica se existe WHERE
                         		char aux2[100];
                         		if(fgets(aux2, sizeof(aux2), arqComandos)){
@@ -555,7 +577,7 @@ int main(int argc, char *argv[]){
                    						val[strlen(val)-1]=0;
                    						char comando[100]; //vai concatenar td
                    						strcpy(comando,"S(");
-                                        tiraQuebra(arqAnterior);//tira quebra de linha se ela existe      
+                                        tiraQuebra(arqAnterior);//tira quebra de linha se ela existe
                    						strcat(comando,arqAnterior); //caso não tenha join arqAnterior tem o mesmo valor de relA
                    						strcat(comando,",");
                    						strcat(comando,atr);
@@ -579,7 +601,7 @@ int main(int argc, char *argv[]){
                         			else{
                         				// TA ERRADO TEM Q MODIFICAR ESSE CASO DO IMPRIME TABELA
                         				// PRECISA CHECAR ANTES SE ELE N TEM PROJECAO
-                        				
+
                         				imprimeTabela(relA); //o resultado e a propria tabela
                         			}
 
@@ -604,7 +626,7 @@ int main(int argc, char *argv[]){
                         				fprintf(arqAlgebra,"%s\n",comando);
                         				interpreta(comando);
                         			}
-                        		}	
+                        		}
                         	}
                     		else{
                        			//nunca entra nesse caso

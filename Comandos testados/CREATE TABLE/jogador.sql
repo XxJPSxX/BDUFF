@@ -1,6 +1,6 @@
 CREATE TABLE JOGADOR (
-ID I,nn,chv,
-Login C,nn,
-Senha C,nn,
-Pontos I,
-PosRanking I)
+ID INTEGER nn chv,
+Login STRING nn,
+Senha STRING nn,
+Pontos INTEGER,
+PosRanking INTEGER)
