@@ -484,9 +484,7 @@ int main(int argc, char *argv[]){
                    									strcat(comando,cond);
                    									strcat(comando,",");
                    									strcat(comando,"RESULTADO_JUNCAO");
-
                    									strcpy(arqAnterior,"RESULTADO_JUNCAO");
-
                    									strcat(comando,")");
 
                    									//printf("%s",comando);
@@ -559,6 +557,7 @@ int main(int argc, char *argv[]){
                    								val[strlen(val)-1]=0;
                    								char comando[100]; //vai concatenar td
                    								strcpy(comando,"S(");
+                                                tiraQuebra(arqAnterior);//tira quebra de linha se ela existe      
                    								strcat(comando,arqAnterior); //caso não tenha join arqAnterior tem o mesmo valor de relA
                    								strcat(comando,",");
                    								strcat(comando,atr);
@@ -577,13 +576,13 @@ int main(int argc, char *argv[]){
                    								fprintf(arqAlgebra,"%s\n", comando);
 
                         						interpreta(comando);
-
+                                                imprimeTabela(arqAnterior);
                         					}
                         					else{
                         						// TA ERRADO TEM Q MODIFICAR ESSE CASO DO IMPRIME TABELA
                         						// PRECISA CHECAR ANTES SE ELE N TEM PROJECAO
                         						
-                        						//imprimeTabela(relA); //o resultado e a propria tabela
+                        						imprimeTabela(relA); //o resultado e a propria tabela
                         					}
 
 

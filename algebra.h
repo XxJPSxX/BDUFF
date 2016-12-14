@@ -47,7 +47,6 @@ void libera(TAtr *a)
 	}
 }
 
-
 void imprime(TAtr *a)
 {
 	if(a)
@@ -70,92 +69,11 @@ TAtr *busca(TAtr *a, char *valor)
 	return NULL;
 }
 
-TAtr *junta_mudando_nomes(TAtr *a, TAtr *b,char *relA, char *relB)
+void tiraQuebra(char *string)
 {
-	TAtr *resp = NULL;
-	//quando a relação é igual
-	if(!strcmp(relA,relB))
-	{
-		TAtr *aux = a;
-		int i = 1;
-		//variavel que rece a string do contador
-		char cont[2];
-		sprintf(cont, "%d", i);
-		
-		while(aux)
-		{
-			char atributo[sizeof(aux->atr) + 2];
-			
-			//separa so o nome do atributo
-			char *nome = strtok(aux->atr,",");
-			strcpy(atributo, nome);
-			strcat(atributo, cont);
-			strcat(atributo,",");
-			//pega o resto da linha com o not null e ordenação
-			nome = strtok(NULL,"");
-			strcat(atributo,nome);
-			//----------------------------
-			strcpy(aux->atr,atributo);
-			aux = aux->prox;
-		}
-		
-		aux = b;
-		i++;
-		sprintf(cont, "%d", i);
-		while(aux)
-		{
-			char atributo[sizeof(aux->atr) + 2];
-			//separa so o nome do atributo
-			char *nome = strtok(aux->atr,",");
-			strcpy(atributo, nome);
-			strcat(atributo, cont);
-			strcat(atributo,",");
-			//pega o resto da linha com o not null e ordenação
-			nome = strtok(NULL,"");
-			strcat(atributo,nome);
-			//----------------------------
-			strcpy(aux->atr,atributo);
-			aux = aux->prox;
-		}
-	}
-	else
-	{
-		TAtr *aux = a;
-		while(aux)
-		{
-			char atributo[sizeof(aux->atr) + sizeof(relA)];
-			strcpy(atributo,relA);
-			strcat(atributo,aux->atr);
-			strcpy(aux->atr,atributo);
-			aux = aux->prox;
-		}
-		
-		aux = b;
-		while(aux)
-		{
-			char atributo[sizeof(aux->atr) + sizeof(relB)];
-			strcpy(atributo,relB);
-			strcat(atributo,aux->atr);
-			strcpy(aux->atr,atributo);
-			aux = aux->prox;
-		}
-	}
-	
-	while(a)
-	{
-		resp = insere_fim(resp,a->atr, a->indice);
-		a = a->prox;
-	}
-	
-	while(b)
-	{
-		resp = insere_fim(resp,b->atr, b->indice);
-		b = b->prox;
-	}
-	return resp;
+	char *quebra = strchr(string,'\n');
+	if(quebra)*quebra = 0;
 }
-
-void interpreta(char *a);
 
 char *geraNomeArq(char *rel, char *extensao)
 {
@@ -165,15 +83,11 @@ char *geraNomeArq(char *rel, char *extensao)
 	return result;
 }
 
-
 int compara(char *op, char *val1, char *val2)
 {	
 	//tira o \n dos operadores
-	char *newline = strchr(val2, '\n' );
-	if ( newline ) *newline = 0;
-	
-	newline = strchr(val1, '\n' );
-	if ( newline ) *newline = 0;
+	tiraQuebra(val1);
+	tiraQuebra(val2);
 	///
 	
 	
@@ -212,23 +126,10 @@ int compara(char *op, char *val1, char *val2)
 	}
 }
 
-void lerAlgebra(char *arq)
-{
-	FILE *alg = fopen(arq,"rt");
-	if(!alg) exit(1);
-	char linha[50];
-	while(fgets(linha, sizeof(linha), alg))
-	{
-		interpreta(linha);
-	}
-	fclose(alg);
-}
-
 void selecao(char *relacao, char *atr, char *op, char *val, char *saida)
 {
 	//copiar catalogo para o saida e depois copiar as tuplas que interessam ao op e ao val
 	char *aux;
-	
 	//ajusta o nome do arquvio que será aberto
 	aux = geraNomeArq(relacao,".ctl");
 	FILE *frelacao = fopen(aux,"rt");
@@ -314,15 +215,11 @@ void selecao(char *relacao, char *atr, char *op, char *val, char *saida)
 	fclose(fsaida);
 }
 
-
 char *pegaVal(TAtr *a, char *atr, char *linha)
 {
 	char aux[strlen(linha)];
 	strcpy(aux,linha);
-	
-	char *nLinha = strchr(aux,'\n');
-	if(nLinha) *nLinha = 0;
-	
+	tiraQuebra(aux);
 	
 	char *tkn = strtok(aux," ,");
 	char *resp = malloc(sizeof(char) * 20);
@@ -351,6 +248,91 @@ int conta(TAtr *a)
 		a = a->prox;
 	}
 	return i;
+}
+
+TAtr *junta_mudando_nomes(TAtr *a, TAtr *b,char *relA, char *relB)
+{
+	TAtr *resp = NULL;
+	//quando a relação é igual
+	if(!strcmp(relA,relB))
+	{
+		TAtr *aux = a;
+		int i = 1;
+		//variavel que rece a string do contador
+		char cont[2];
+		sprintf(cont, "%d", i);
+		
+		while(aux)
+		{
+			char atributo[sizeof(aux->atr) + 2];
+			
+			//separa so o nome do atributo
+			char *nome = strtok(aux->atr,",");
+			strcpy(atributo, nome);
+			strcat(atributo, cont);
+			strcat(atributo,",");
+			//pega o resto da linha com o not null e ordenação
+			nome = strtok(NULL,"");
+			strcat(atributo,nome);
+			//----------------------------
+			strcpy(aux->atr,atributo);
+			aux = aux->prox;
+		}
+		
+		aux = b;
+		i++;
+		sprintf(cont, "%d", i);
+		while(aux)
+		{
+			char atributo[sizeof(aux->atr) + 2];
+			//separa so o nome do atributo
+			char *nome = strtok(aux->atr,",");
+			strcpy(atributo, nome);
+			strcat(atributo, cont);
+			strcat(atributo,",");
+			//pega o resto da linha com o not null e ordenação
+			nome = strtok(NULL,"");
+			strcat(atributo,nome);
+			//----------------------------
+			strcpy(aux->atr,atributo);
+			aux = aux->prox;
+		}
+	}
+	else
+	{
+		TAtr *aux = a;
+		while(aux)
+		{
+			char atributo[sizeof(aux->atr) + sizeof(relA)];
+			strcpy(atributo,relA);
+			strcat(atributo,aux->atr);
+			strcpy(aux->atr,atributo);
+			aux = aux->prox;
+		}
+		
+		aux = b;
+		while(aux)
+		{
+			char atributo[sizeof(aux->atr) + sizeof(relB)];
+			strcpy(atributo,relB);
+			strcat(atributo,aux->atr);
+			strcpy(aux->atr,atributo);
+			aux = aux->prox;
+		}
+	}
+	
+	while(a)
+	{
+		resp = insere_fim(resp,a->atr, a->indice);
+		a = a->prox;
+	}
+	
+	while(b)
+	{
+		resp = insere_fim(resp,b->atr, b->indice);
+		b = b->prox;
+	}
+	return resp;
 }
 
 ///J(A,B,condição-juncao,Z)
@@ -440,15 +422,12 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 	
 	while(fgets(linhaA, sizeof(linhaA), arqA) && strcmp(linhaA,"\n"))
 	{
-		char *newline = strchr(linhaA, '\n' );
-		if ( newline ) *newline = 0;
-
+		tiraQuebra(linhaA);
 		char *valA = pegaVal(a,atrA,linhaA);
 		
 		while(fgets(linhaB, sizeof(linhaB), arqB) && strcmp(linhaB,"\n"))
 		{
-			newline = strchr(linhaB, '\n' );
-			if ( newline ) *newline = 0;
+			tiraQuebra(linhaB);
 			char *valB = pegaVal(b,atrB,linhaB);
 						
 			if(compara("=",valA,valB))
@@ -594,7 +573,7 @@ void interpreta(char *inst)
 		char val[50];
 		strcpy(val,strtok(NULL,"(,)"));
 		char saida[30];
-		strcat(saida,strtok(NULL,"(,)"));
+		strcpy(saida,strtok(NULL,"(,)"));
 		selecao(rel,atributo,operador,val,saida);
 	}
 	else if(!strcmp(strings,"J"))
@@ -640,3 +619,48 @@ void interpreta(char *inst)
 	}
 }
 
+void lerAlgebra(char *arq)
+{
+	FILE *alg = fopen(arq,"rt");
+	if(!alg) exit(1);
+	char linha[50];
+	while(fgets(linha, sizeof(linha), alg))
+	{
+		interpreta(linha);
+	}
+	fclose(alg);
+}
+
+void imprimeTabela(char *tabela)
+{
+	char *nomeArq = geraNomeArq(tabela,".ctl");
+	FILE *ctl = fopen(nomeArq,"rt");
+	if(!ctl)exit(1);
+	
+	char linha[100];
+	//tira o cabeçalho
+	fgets(linha, sizeof(linha), ctl);
+	while(fgets(linha, sizeof(linha), ctl))
+	{
+		char *print = strtok(linha,",");
+		printf("%s\t\t",print);
+	}
+	printf("\n");
+	fclose(ctl);
+	
+	nomeArq = geraNomeArq(tabela,".dad");
+	FILE *dad = fopen(nomeArq,"rt");
+	if(!dad)exit(1);
+	
+	while(fgets(linha, sizeof(linha), dad))
+	{
+		tiraQuebra(linha);
+		char *print = strtok(linha,",");
+		while(print)
+		{
+			printf("%s\t\t",print);
+			print = strtok(NULL,",");
+		}
+		printf("\n");
+	}
+}
