@@ -458,7 +458,6 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 				strcpy(aux_junta,linhaA);
 
 				char *linha = junta(aux_junta,linhaB);
-				printf("linha: %s",linha);
 				fprintf(fsaida,"%s\n", linha);
 				card++;
 			}
