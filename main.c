@@ -226,7 +226,7 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                 FILE *arqDados= fopen(nomeTab, "w");
                 for(i=0;i<grau;i++){
                     if(i==grau-1) fprintf(arqDados,"%s",valoresSep[i]);
-                    else fprintf(arqDados,"%s ",valoresSep[i]);
+                    else fprintf(arqDados,"%s,",valoresSep[i]);
                 }
                 fprintf(arqDados,"\n");
                 fclose(arqDados);
@@ -282,7 +282,7 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                             else if(!salvouAtual){
                                 for(i=0;i<grau;i++){
                                     if(i==grau-1) fprintf(arqDados,"%s",valoresSep[i]);
-                                    else fprintf(arqDados,"%s ",valoresSep[i]);
+                                    else fprintf(arqDados,"%s,",valoresSep[i]);
                                 }
                                 fprintf(arqDados,"\n");
                                 fprintf(arqMaior,"%s",linhaAux);
@@ -311,7 +311,7 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                     if(!salvouAtual){
                         for(i=0;i<grau;i++){
                             if(i==grau-1) fprintf(arqDados,"%s",valoresSep[i]);
-                            else fprintf(arqDados,"%s ",valoresSep[i]);
+                            else fprintf(arqDados,"%s,",valoresSep[i]);
                         }
                         fprintf(arqDados,"\n");
                         fclose(arqDados);
@@ -325,7 +325,7 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                     FILE *arqDados= fopen(nomeTab, "a");
                     for(i=0;i<grau;i++){
                         if(i==grau-1) fprintf(arqDados,"%s",valoresSep[i]);
-                        else fprintf(arqDados,"%s ",valoresSep[i]);
+                        else fprintf(arqDados,"%s,",valoresSep[i]);
                     }
                     fprintf(arqDados,"\n");
                     fclose(arqDados);
