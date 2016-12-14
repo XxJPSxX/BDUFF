@@ -361,6 +361,7 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
     fclose(arqInfos);
     fclose(arqComandos);
 }
+
 int main(int argc, char *argv[]){
     char comandoSQL[30];
     scanf("%s", comandoSQL);
@@ -436,7 +437,7 @@ int main(int argc, char *argv[]){
                         	char aux1[100];
 
                         	char relA[20];
-                        	char arqProj[20];
+                        	char arqAnterior[20];
                         	int nAtributos=0;
 
                         	if(strcmp(atributos,"*")){
@@ -454,85 +455,37 @@ int main(int argc, char *argv[]){
                         			token = strtok(aux1, " ");
                         			printf("%s",token);
                         			if(strcmp(token,"FROM")==0){
-                        				token = strtok(NULL, " ");
+                        				token = strtok(NULL, " (");
                         				//char relA[20];
                         				strcpy(relA,token);
 
-                        				strcpy(arqProj,relA);
+                        				strcpy(arqAnterior,relA);
 
-                        				//testa se existe join
+                        				//verifica se existe join
                         				token = strtok(NULL, " ");
                         				if(token){
                         					//existe join
-                        				}
-                        				else{
-                        					//verifica se existe WHERE
-
-                        					char aux2[100];
-                        					if(fgets(aux2, sizeof(aux2), arqComandos)){
-                        						token = strtok(aux2, " ");
-                        						if(strcmp(token,"WHERE")==0){
-
-                        							//char *val = strtok(NULL, "=<>");
-
-                   									token = strtok(NULL, " ");
-
-                   									char cond[100], cond_aux[100];
-                   									strcpy(cond,token); //cond guarda a condicao de selecao
-                   									strcpy(cond_aux,cond);
-
-                   									char op[3];
-                   									printf("condicao: %s",cond);
-                   									if((strstr(cond,"<>") != NULL)){
-                   									 	strcpy(op,"<>");
-                   									}
-                   									else if(strstr(cond,"<=") != NULL){
-               											strcpy(op,"<=");
-
-               										}
-               										else if(strstr(cond,">=") != NULL){
-           												strcpy(op,">=");
-           											}
-           											else if(strstr(cond,"=") != NULL){
-       														strcpy(op,"=");
-       												}
-       												else if(strstr(cond,">") != NULL){
-       													strcpy(op,">");
-   													}
-                   									else if(strstr(cond,"<") != NULL){
-														strcpy(op,"<");
-													}
-													else{
-														exit(1);
-													}
-
-                   									//char separa[5];
-                   									//strcpy(separa,op);
-                   									//strcat(separa,";");
-
-                   									printf("%s",op);
-
-                   									char *atr = strtok(cond,op);
-                   									char *val = strtok(NULL,op);
-
-                   									printf("%s",atr);
-                   									printf("%s",val);
-
-                   									relA[strlen(relA)-1]=0;
-                   									val[strlen(val)-1]=0;
-                   									char comando[100]; //vai concatenar td
-                   									strcpy(comando,"S(");
+                        					if(strcmp(token,"JOIN")==0){
+                        						char *relB = strtok(NULL, " ");
+                        						char cond[50];
+                        						token = strtok(NULL, " ");
+                        						if(strcmp(token,"ON")==0){
+                        							token = strtok(NULL, " )");
+                        							strcpy(cond,token);
+                        							
+                        							
+                        							//faltam os tratamentos pra tirar \n e coisas assim
+                        							char comando[100]; //vai concatenar td
+                   									strcpy(comando,"J(");
                    									strcat(comando,relA);
                    									strcat(comando,",");
-                   									strcat(comando,atr);
+                   									strcat(comando,relB);
                    									strcat(comando,",");
-                   									strcat(comando,op);
+                   									strcat(comando,cond);
                    									strcat(comando,",");
-                   									strcat(comando,val);
-                   									strcat(comando,",");
-                   									strcat(comando,"RESULTADO_SELECAO");
+                   									strcat(comando,"RESULTADO_JUNCAO");
 
-                   									strcpy(arqProj,"RESULTADO_SELECAO");
+                   									strcpy(arqAnterior,"RESULTADO_JUNCAO");
 
                    									strcat(comando,")");
 
@@ -540,9 +493,96 @@ int main(int argc, char *argv[]){
                    									fprintf(arqAlgebra,"%s\n", comando);
 
                         							interpreta(comando);
+                        							
+												}
+												else{
+													printf("comando invalido");
+												}
+											}
+											else{
+												printf("comando invalido");
+											}
+                        				}
+                        				
+                        				//verifica se existe WHERE
+                        				char aux2[100];
+                        				if(fgets(aux2, sizeof(aux2), arqComandos)){
+                        					token = strtok(aux2, " ");
+                        					if(strcmp(token,"WHERE")==0){
+
+                        						//char *val = strtok(NULL, "=<>");
+
+                   								token = strtok(NULL, " ");
+
+                   								char cond[100], cond_aux[100];
+                   								strcpy(cond,token); //cond guarda a condicao de selecao
+                   								strcpy(cond_aux,cond);
+
+                   								char op[3];
+                   								printf("condicao: %s",cond);
+                   								if((strstr(cond,"<>") != NULL)){
+                   								 	strcpy(op,"<>");
+                   								}
+                   								else if(strstr(cond,"<=") != NULL){
+               										strcpy(op,"<=");
+
+               									}
+               									else if(strstr(cond,">=") != NULL){
+           											strcpy(op,">=");
+           										}
+           										else if(strstr(cond,"=") != NULL){
+       													strcpy(op,"=");
+       											}
+       											else if(strstr(cond,">") != NULL){
+       												strcpy(op,">");
+   												}
+                   								else if(strstr(cond,"<") != NULL){
+													strcpy(op,"<");
+												}
+												else{
+													exit(1);
+												}
+
+                   								//char separa[5];
+                   								//strcpy(separa,op);
+                   								//strcat(separa,";");
+
+                   								printf("%s",op);
+
+                   								char *atr = strtok(cond,op);
+                   								char *val = strtok(NULL,op);
+
+                   								printf("%s",atr);
+                   								printf("%s",val);
+
+                   								relA[strlen(relA)-1]=0;
+                   								val[strlen(val)-1]=0;
+                   								char comando[100]; //vai concatenar td
+                   								strcpy(comando,"S(");
+                   								strcat(comando,arqAnterior); //caso não tenha join arqAnterior tem o mesmo valor de relA
+                   								strcat(comando,",");
+                   								strcat(comando,atr);
+                   								strcat(comando,",");
+                   								strcat(comando,op);
+                   								strcat(comando,",");
+                   								strcat(comando,val);
+                   								strcat(comando,",");
+                   								strcat(comando,"RESULTADO_SELECAO");
+
+                   								strcpy(arqAnterior,"RESULTADO_SELECAO");
+
+                   								strcat(comando,")");
+
+                   								//printf("%s",comando);
+                   								fprintf(arqAlgebra,"%s\n", comando);
+
+                        						interpreta(comando);
 
                         					}
                         					else{
+                        						// TA ERRADO TEM Q MODIFICAR ESSE CASO DO IMPRIME TABELA
+                        						// PRECISA CHECAR ANTES SE ELE N TEM PROJECAO
+                        						
                         						//imprimeTabela(relA); //o resultado e a propria tabela
                         					}
 
@@ -552,7 +592,7 @@ int main(int argc, char *argv[]){
                         						//faz projeção
                         						char comando[100];
                         						strcpy(comando,"P(");
-                        						strcat(comando,arqProj);
+                        						strcat(comando,arqAnterior);
                         						strcat(comando,",");
                         						//transforma int para string
                         						char nAtrib[10];
@@ -561,22 +601,20 @@ int main(int argc, char *argv[]){
                         						strcat(comando,",");
                         						strcat(comando,atributos);
                         						strcat(comando,",");
-                        						strcat(comando,"RESULTADO_FINAL");
+                        						strcat(comando,"RESULTADO_PROJECAO");
                         						strcat(comando,")");
-                        						//P(arqProj,nAtributos,atributos,"RESULTADO_FINAL");
 
                         						fprintf(arqAlgebra,"%s\n",comando);
                         						interpreta(comando);
 
                         					}
                         				}
-                        			}
+                        			
                         	}
                         }
                         else{
-                        	//lista de atributos
-                        	//projecao(char *relacao, char *n, char *lista, char *saida)
-
+                        	//nunca entra nesse caso
+                        	//pois sempre tem FROM
                         }
                     	fclose(arqAlgebra);
                     }
