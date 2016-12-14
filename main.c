@@ -218,7 +218,6 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                 }
                 i++;
             }
-
             nomeTab[strlen(nomeTab)-1] = 0;
             strcat(nomeTab,".dad");
             //se o arquivo estiver vazio só coloca no arquivo
@@ -274,17 +273,16 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                             }
 
                             //depois de achado o valor da linha da coluna que quero,eu verifico se sao iguais,se sim return
-                            if(strcmp(token,valoresSep[posOrd])<0){
-
+                            if((strlen(token)==strlen(valoresSep[posOrd])&& strcmp(token,valoresSep[posOrd])<0) || (strlen(token)<strlen(valoresSep[posOrd]))){
                                 fprintf(arqMenor,"%s",linhaAux);
                                 posSalvou++;
                             }
                             else if(!salvouAtual){
                                 for(i=0;i<grau;i++){
-                                    if(i==grau-1) fprintf(arqDados,"%s",valoresSep[i]);
-                                    else fprintf(arqDados,"%s,",valoresSep[i]);
+                                    if(i==grau-1) fprintf(arqMaior,"%s",valoresSep[i]);
+                                    else fprintf(arqMaior,"%s,",valoresSep[i]);
                                 }
-                                fprintf(arqDados,"\n");
+                                fprintf(arqMaior,"\n");
                                 fprintf(arqMaior,"%s",linhaAux);
                                 salvouAtual=1;
                             }
@@ -318,6 +316,8 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                     }
                     fclose(arqMaior);
                     fclose(arqMenor);
+                    remove("auxDadosMaior.txt");
+                    remove("auxDadosMenor.txt");
                     fclose(arqDados);
                 }
                 //se ele for o maior insere no final
