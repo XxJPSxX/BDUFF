@@ -1,0 +1,4 @@
+CREATE TABLE DEPTO (
+NUM I nn chv ord,
+NOME C nn,
+AREA C)
