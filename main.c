@@ -442,18 +442,22 @@ int main(int argc, char *argv[]){
                         	char relA[20];
                         	char arqAnterior[20];
                         	int nAtributos=0;
-
-                        	if(strcmp(atributos,"*")){
-                        		nAtributos = 1;
-                        		token = strtok(NULL,",\n");
+							
+							char contador[strlen(result)];
+							strcpy(contador,result);
+							
+                        	if(strcmp(contador,"*")){
+                        		nAtributos = 0;
+                        		token = strtok(contador,",");
                         		while(token){
-                        			strcat(atributos,token);
+    		                    	printf("token %s",token);
+                        			//strcat(atributos,token);
                         			nAtributos++;
-                        			token = strtok(NULL,",\n");
+                        			token = strtok(NULL,",");
                         		}
                         	}
 
-
+							printf("passei dos atributos");
                         	if(fgets(aux1, sizeof(aux1), arqComandos)){
                         			token = strtok(aux1, " ");
                         			printf("%s",token);
@@ -461,7 +465,7 @@ int main(int argc, char *argv[]){
                         				token = strtok(NULL, " (");
                         				//char relA[20];
                         				strcpy(relA,token);
-
+										printf("cheguei no from");
                         				strcpy(arqAnterior,relA);
 
                         				//verifica se existe join
@@ -492,7 +496,6 @@ int main(int argc, char *argv[]){
 
                    									//printf("%s",comando);
                    									fprintf(arqAlgebra,"%s\n", comando);
-
                         							interpreta(comando);
                         							
 												}
@@ -510,7 +513,7 @@ int main(int argc, char *argv[]){
                         				if(fgets(aux2, sizeof(aux2), arqComandos)){
                         					token = strtok(aux2, " ");
                         					if(strcmp(token,"WHERE")==0){
-
+												printf("cheguei no where");
                         						//char *val = strtok(NULL, "=<>");
 
                    								token = strtok(NULL, " ");
@@ -526,7 +529,6 @@ int main(int argc, char *argv[]){
                    								}
                    								else if(strstr(cond,"<=") != NULL){
                										strcpy(op,"<=");
-
                									}
                									else if(strstr(cond,">=") != NULL){
            											strcpy(op,">=");
@@ -541,21 +543,21 @@ int main(int argc, char *argv[]){
 													strcpy(op,"<");
 												}
 												else{
+													printf("operador nao encontrado");
 													exit(1);
 												}
-
+												
+												printf("passei dos atributos %s",op);
                    								//char separa[5];
                    								//strcpy(separa,op);
                    								//strcat(separa,";");
 
-                   								printf("%s",op);
 
                    								char *atr = strtok(cond,op);
                    								char *val = strtok(NULL,op);
 
-                   								printf("%s",atr);
                    								printf("%s",val);
-
+												printf("passei dos val %s",val);
                    								relA[strlen(relA)-1]=0;
                    								val[strlen(val)-1]=0;
                    								char comando[100]; //vai concatenar td
@@ -574,8 +576,6 @@ int main(int argc, char *argv[]){
                    								strcpy(arqAnterior,"RESULTADO_SELECAO");
 
                    								strcat(comando,")");
-
-                   								//printf("%s",comando);
                    								fprintf(arqAlgebra,"%s\n", comando);
 
                         						interpreta(comando);
@@ -585,17 +585,18 @@ int main(int argc, char *argv[]){
                         						// TA ERRADO TEM Q MODIFICAR ESSE CASO DO IMPRIME TABELA
                         						// PRECISA CHECAR ANTES SE ELE N TEM PROJECAO
                         						
-                        						imprimeTabela(relA); //o resultado e a propria tabela
+                        						//imprimeTabela(relA); //o resultado e a propria tabela
                         					}
 
 
                         					if(strcmp(atributos,"*"))
                         					{
                         						//faz projeção
-                        						char comando[100];
+                        						char comando[200];
                         						strcpy(comando,"P(");
                         						strcat(comando,arqAnterior);
                         						strcat(comando,",");
+												printf("terminei c");
                         						//transforma int para string
                         						char nAtrib[10];
                         						sprintf(nAtrib, "%d", nAtributos);
@@ -605,10 +606,10 @@ int main(int argc, char *argv[]){
                         						strcat(comando,",");
                         						strcat(comando,"RESULTADO_PROJECAO");
                         						strcat(comando,")");
+												printf("comando: %s",comando);
 
                         						fprintf(arqAlgebra,"%s\n",comando);
                         						interpreta(comando);
-
                         					}
                         				}
                         			

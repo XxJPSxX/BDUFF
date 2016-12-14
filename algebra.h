@@ -88,8 +88,7 @@ int compara(char *op, char *val1, char *val2)
 	//tira o \n dos operadores
 	tiraQuebra(val1);
 	tiraQuebra(val2);
-	///
-	
+	//
 	
 	if(strcmp(op,"<") == 0)
 	{
@@ -110,13 +109,13 @@ int compara(char *op, char *val1, char *val2)
 	}
 	if(strcmp(op,"<=") == 0)
 	{
-		if(strcmp(val1,val2) <= 0)
+		if(strcmp(val1,val2) >= 0)
 			return 1;
 		return 0;
 	}
 	if(strcmp(op,">=") == 0)
 	{
-		if(strcmp(val1,val2) >= 0)
+		if(strcmp(val1,val2) <= 0)
 			return 1;
 		return 0;
 	}
@@ -464,6 +463,7 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 
 void projecao(char *relacao, char *n, char *lista, char *saida)
 {
+	//printf("%s",n);
 	//copiar catalogo para o saida e depois copiar as tuplas que interessam ao op e ao val
 	char *aux;
 	
@@ -556,10 +556,11 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 	fclose(fsaida);
 	fclose(frelacao);
 	libera(atr);
+	printf("Projecao concluida");
 }
 
 void interpreta(char *inst)
-{
+{	
 	//na primeira leitura, a variavel string vai conter a operação que será realizada
 	char *strings = strtok(inst,"(,)");
 	if(!strcmp(strings,"S"))
@@ -602,10 +603,13 @@ void interpreta(char *inst)
 		char *lista_aux = strtok(NULL,",");
 		char *lista = malloc(sizeof(char) * 50); //(André)é necessário uma lista auxiliar?(Alysson)acho q nao
 		strcpy(lista,lista_aux);	
-		for(i=0;i<num-1;i++){
+		strcat(lista,",");
+		for(i=1;i<num;i++){
 			strcat(lista,strtok(NULL,"(,)"));
+			strcat(lista,",");
 		}
-		
+		printf("%s",lista);
+		printf("%d",num);
 		char saida[50];
 		strcpy(saida,strtok(NULL,"(,)"));
 		projecao(relacao,n,lista,saida);
