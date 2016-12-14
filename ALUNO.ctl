@@ -1,4 +1,5 @@
-3,2
-NOME,C
-MATRICULA,C,nn,chv
+4,7
+MATRICULA,I,nn,chv,ord
+NOME,C,nn
+CURSO,C,nn
 CR,I
