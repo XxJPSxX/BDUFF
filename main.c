@@ -364,8 +364,9 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
 
 int main(int argc, char *argv[]){
     char comandoSQL[30];
-    scanf("%s", comandoSQL);
-    FILE *arqComandos = fopen(comandoSQL, "r");
+   // scanf("%s", comandoSQL);
+   // printf("%s",argv[1]);
+    FILE *arqComandos = fopen(argv[1], "r");
     if(!arqComandos){
         printf("arquivo nao localizado");
         return 0;
