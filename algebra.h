@@ -573,7 +573,6 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 			}
 			quantVal++;
 			strcat(linhaSaida,valor);
-			printf("LINHA: %s\n",linhaSaida);
 			if(quantVal != grau)
 				strcat(linhaSaida,",");
 			auxAtr = auxAtr->prox;
@@ -581,6 +580,7 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 		tiraQuebra(linhaSaida);
 		fprintf(fsaida,"%s\n",linhaSaida);
 		auxAtr = atr;
+		quantVal = 0;
 	}
 	fclose(fsaida);
 	fclose(frelacao);
