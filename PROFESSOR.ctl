@@ -1,0 +1,5 @@
+4,5
+MATRICULA,I,nn,chv,ord
+NOME,C,nn
+AREA,C
+SALARIO,I

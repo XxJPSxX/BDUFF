@@ -184,6 +184,7 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                     if(!strcmp(token,"C") || !strcmp(token,"C\n")){
                         if((valoresSep[i][0]!='"' || valoresSep[i][strlen(valoresSep[i])-1]!='"')){
                                 if(strcmp(valoresSep[i],"NULO")!=0){
+                                    printf("Erro nos tipos das variaveis");
                                     return;
                                 }
                         }
@@ -191,12 +192,16 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                     //se é int
                     else if(!strcmp(token,"I") || !strcmp(token,"I\n")){
                         if(!atoi(valoresSep[i])) {
+                                printf("Erro nos tipos das variaveis");
                                 return;
                         }
                     }
                     //se é not null
                     else if(!strcmp(token,"nn") || !strcmp(token,"nn\n")){
-                        if(strcmp(valoresSep[i],"NULO")==0) return;
+                        if(strcmp(valoresSep[i],"NULO")==0) {
+                            printf("Erro nos tipos das variaveis");
+                            return;
+                        }
                     }
                     //verifica se é chave,se for ele verifica se tem valor repetido nos dados
                     else if(!strcmp(token,"chv") || !strcmp(token,"chv\n")){
@@ -212,13 +217,16 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                 }
                 i++;
             }
-
             nomeTab[strlen(nomeTab)-1] = 0;
             strcat(nomeTab,".dad");
             //se o arquivo estiver vazio só coloca no arquivo
             if(ch==0){
                 FILE *arqDados= fopen(nomeTab, "w");
-                fprintf(arqDados,"%s,%s,%s\n",valoresSep[0],valoresSep[1],valoresSep[2]);
+                for(i=0;i<grau;i++){
+                    if(i==grau-1) fprintf(arqDados,"%s",valoresSep[i]);
+                    else fprintf(arqDados,"%s,",valoresSep[i]);
+                }
+                fprintf(arqDados,"\n");
                 fclose(arqDados);
             }
             else{
@@ -238,6 +246,7 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                                     j++;
                                 }
                                 //depois de achado o valor da linha da coluna que quero,eu verifico se sao iguais,se sim return
+                                if(token[strlen(token)-1]=='\n') token[strlen(token)-1] = 0;
                                 if(strcmp(token,valoresSep[i])==0) return;
                         }
                         fclose(arqDados);
@@ -263,13 +272,16 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                             }
 
                             //depois de achado o valor da linha da coluna que quero,eu verifico se sao iguais,se sim return
-                            if(strcmp(token,valoresSep[posOrd])<0){
-
+                            if((strlen(token)==strlen(valoresSep[posOrd])&& strcmp(token,valoresSep[posOrd])<0) || (strlen(token)<strlen(valoresSep[posOrd]))){
                                 fprintf(arqMenor,"%s",linhaAux);
                                 posSalvou++;
                             }
                             else if(!salvouAtual){
-                                fprintf(arqMaior,"%s,%s,%s\n",valoresSep[0],valoresSep[1],valoresSep[2]);
+                                for(i=0;i<grau;i++){
+                                    if(i==grau-1) fprintf(arqMaior,"%s",valoresSep[i]);
+                                    else fprintf(arqMaior,"%s,",valoresSep[i]);
+                                }
+                                fprintf(arqMaior,"\n");
                                 fprintf(arqMaior,"%s",linhaAux);
                                 salvouAtual=1;
                             }
@@ -294,8 +306,11 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                     }
                     fclose(arqMaior);
                     if(!salvouAtual){
-                        FILE *arqDados= fopen(nomeTab, "a");
-                        fprintf(arqDados,"%s,%s,%s \n",valoresSep[0],valoresSep[1],valoresSep[2]);
+                        for(i=0;i<grau;i++){
+                            if(i==grau-1) fprintf(arqDados,"%s",valoresSep[i]);
+                            else fprintf(arqDados,"%s,",valoresSep[i]);
+                        }
+                        fprintf(arqDados,"\n");
                         fclose(arqDados);
                     }
                     fclose(arqMaior);
@@ -307,7 +322,11 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                 //se ele for o maior insere no final
                 else{
                     FILE *arqDados= fopen(nomeTab, "a");
-                    fprintf(arqDados,"%s,%s,%s \n",valoresSep[0],valoresSep[1],valoresSep[2]);
+                    for(i=0;i<grau;i++){
+                        if(i==grau-1) fprintf(arqDados,"%s",valoresSep[i]);
+                        else fprintf(arqDados,"%s,",valoresSep[i]);
+                    }
+                    fprintf(arqDados,"\n");
                     fclose(arqDados);
                 }
             }
@@ -319,12 +338,16 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
         }
 		else{
 			printf("Erro na quantidade de valores inseridos");
+            fclose(arqInfos);
+            fclose(arqComandos);
+            return;
 		}
         fclose(arqInfos);
         fclose(arqComandos);
     }
 	else{
 		printf("Erro de arquivo");
+		return;
     }
     printf("Insercao concluida");
     fclose(arqInfos);
