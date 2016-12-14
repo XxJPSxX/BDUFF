@@ -47,6 +47,7 @@ void libera(TAtr *a)
 	}
 }
 
+
 void imprime(TAtr *a)
 {
 	if(a)
@@ -190,7 +191,6 @@ int compara(char *op, char *val1, char *val2)
 	if(strcmp(op,"=") == 0)
 	{		
 		int i = strcmp(val1,val2);
-		printf("%s\n",val1);
 		if(i == 0) return 1;
 		return 0;
 	}
@@ -317,7 +317,14 @@ void selecao(char *relacao, char *atr, char *op, char *val, char *saida)
 
 char *pegaVal(TAtr *a, char *atr, char *linha)
 {
-	char *tkn = strtok(linha," ,");
+	char aux[strlen(linha)];
+	strcpy(aux,linha);
+	
+	char *nLinha = strchr(aux,'\n');
+	if(nLinha) *nLinha = 0;
+	
+	
+	char *tkn = strtok(aux," ,");
 	char *resp = malloc(sizeof(char) * 20);
 	while(a && strcmp(atr,a->at))
 	{
@@ -332,7 +339,6 @@ char *junta(char *linhaA, char *linhaB)
 {
 	strcat(linhaA,",");
 	strcat(linhaA,linhaB);
-	strcat(linhaA,"\n");
 	return linhaA;
 }
 
@@ -405,7 +411,6 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 	//copia os atributos pro arquivo ctl
 	while(aux)
 	{
-		printf("CTL: %s\n",aux->atr);
 		fprintf(fsaida,"%s\n",aux->atr);
 		aux = aux->prox;
 	}
@@ -435,24 +440,26 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 	
 	while(fgets(linhaA, sizeof(linhaA), arqA) && strcmp(linhaA,"\n"))
 	{
-		char auxA[sizeof(linhaA)];
-		//tira o \n
-		char *val = strtok(linhaA,"\n");
-		strcpy(auxA,val);
-		char *valA = pegaVal(a,atrA,auxA);
+		char *newline = strchr(linhaA, '\n' );
+		if ( newline ) *newline = 0;
+
+		char *valA = pegaVal(a,atrA,linhaA);
 		
 		while(fgets(linhaB, sizeof(linhaB), arqB) && strcmp(linhaB,"\n"))
 		{
-			char auxB[sizeof(linhaB)];
-			//tira o \n
-			val = strtok(linhaB,"\n");
-			strcpy(auxB,val);
-			//---------
-			char *valB = pegaVal(b,atrB,auxB);
+			newline = strchr(linhaB, '\n' );
+			if ( newline ) *newline = 0;
+			char *valB = pegaVal(b,atrB,linhaB);
+						
 			if(compara("=",valA,valB))
 			{
-				char *linha = junta(linhaA,linhaB);
-				fprintf(fsaida,"%s", linha);
+				//variavel criada para guarda o valor da linhaA, a qual so é lida uma vez e estava sendo alterada indevidamente sem o uso deste
+				char aux_junta[50];
+				strcpy(aux_junta,linhaA);
+
+				char *linha = junta(aux_junta,linhaB);
+				printf("linha: %s",linha);
+				fprintf(fsaida,"%s\n", linha);
 				card++;
 			}
 
@@ -566,7 +573,6 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 				strcat(linhaSaida,",");
 			auxAtr = auxAtr->prox;
 		}
-		printf("Linha de saida: %s\n",valor);
 		fprintf(fsaida,"%s\n",valor);
 	}
 	fclose(fsaida);
