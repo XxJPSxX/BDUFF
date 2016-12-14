@@ -12,21 +12,40 @@ typedef struct atributo
 	struct atributo *prox;
 }TAtr;
 
+void pegaAntesDeTok(char *string, char tok)
+{
+	int i;
+	for(i = 0; i < strlen(string);++i)
+	{
+		if(string[i] == tok)
+		{
+			break;
+		}
+	}
+	strncpy(string, string, i);
+	strcat(string,"\0");
+}
+
+void tiraQuebra(char *string)
+{
+	char *quebra = strchr(string,'\n');
+	if(quebra)*quebra = 0;
+}
+
+int conta(TAtr *a);
+
 TAtr *insere_fim(TAtr *l,char *atr, int i)
 {
 	TAtr *aux = l;
 	TAtr *novo = (TAtr*) malloc(sizeof(TAtr));
-	novo->indice = i;
 	novo->prox = NULL;
-	novo->atr = malloc(sizeof(atr));
-	novo->at = malloc(sizeof(atr));
-	//tira o \n da linha do arquivo
-	char *aux_atr = strtok(atr,"\n");
-	//copia a linha do catálogo
-	strcpy(novo->atr,aux_atr);	
-	aux_atr = strtok(aux_atr,",");
-	strcpy(novo->at,aux_atr);	
-	//copia exatamento o nome do atributo
+	novo->indice = i;
+	tiraQuebra(atr);
+	novo->atr = malloc(strlen(atr));
+	strcpy(novo->atr,atr);	
+	novo->at = malloc(sizeof(char)*20);	
+	pegaAntesDeTok(atr,',');
+	strcpy(novo->at,atr);
 	if(aux) 
 	{
 		while(aux->prox) aux = aux->prox;
@@ -51,28 +70,25 @@ void imprime(TAtr *a)
 {
 	if(a)
 	{
-		printf("%s %d\n",a->atr,a->indice);
+		printf("%s/%d->",a->atr,a->indice);
 		imprime(a->prox);
 	}
 }
 
 TAtr *busca(TAtr *a, char *valor)
 {
-	while(a) 
+	printf("Valor:%s\n",valor);
+	while(1) 
 	{
+		if(a == NULL) return NULL;
+		printf("a->at:%s\n",a->at);
 		if(strcmp(a->at,valor) == 0)
 		{
+			printf("Achei: %s\n",a->at);
 			return a;
 		}
 		a = a->prox;
 	}
-	return NULL;
-}
-
-void tiraQuebra(char *string)
-{
-	char *quebra = strchr(string,'\n');
-	if(quebra)*quebra = 0;
 }
 
 char *geraNomeArq(char *rel, char *extensao)
@@ -463,7 +479,6 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 
 void projecao(char *relacao, char *n, char *lista, char *saida)
 {
-	//printf("%s",n);
 	//copiar catalogo para o saida e depois copiar as tuplas que interessam ao op e ao val
 	char *aux;
 	
@@ -472,6 +487,7 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 	FILE *frelacao = fopen(aux,"rd");
 	free(aux);
 	if(!frelacao)exit(1);
+	
 	//ajusta o nome do arquvio que serÃ¡ aberto
 	aux = geraNomeArq(saida,".ctl");
 	FILE *fsaida = fopen(aux,"wt");
@@ -489,31 +505,39 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 	fprintf(fsaida,"%s", lin);
 	
 	//converte a lista de atributos em char para uma lista de atributos struct
+	tiraQuebra(lista);
+	char *atributo = strtok(lista,",");
 	TAtr *atr = NULL;
-	char *atributo = strtok(lista,",\n");
-	
 	while(atributo)
-	{	
+	{
 		atr = insere_fim(atr,atributo,-1);
 		atributo = strtok(NULL,",");
 	}
+	imprime(atr);
 	
 	int i = 0;
 	//le o arquivo ctl para procurar pelas infos relevantes
 	while(fgets(linha, sizeof(linha), frelacao))
 	{
+		printf("%d",i);
 		char aux[20];
+		printf("%sha",linha);
 		strcpy(aux,linha);
-		char *nomeAtr = strtok(aux,",");
-		TAtr *auxAtr = busca(atr,nomeAtr);
-		if(auxAtr) 
+		if(strcmp(aux,"\n"))
 		{
-			auxAtr->indice = i;
-			fprintf(fsaida,"%s", linha);
+			char *nomeAtr = strtok(aux,",");
+			TAtr *auxAtr = busca(atr,nomeAtr);
+			if(auxAtr != NULL) 
+			{
+				auxAtr->indice = i;
+				fprintf(fsaida,"%s", linha);
+			}
+			i++;
 		}
-		i++;
 	}
-
+	fclose(fsaida);
+	fclose(frelacao);
+	
 	//ajusta o nome do arquvio que serÃ¡ aberto
 	aux = geraNomeArq(relacao,".dad");
 	frelacao = fopen(aux,"rd");
@@ -526,19 +550,22 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 	if(!fsaida)exit(1);	
 	
 	//lista de atributos usada pra percorrer a string de dados que serão copiados
-	TAtr *auxAtr = atr;
+	TAtr *auxAtr = NULL;
 
 	//controlando a copia de virgulas
 	int quantVal = 0;
 	int grau = atoi(n);
+	auxAtr = atr;
+	
 	while(fgets(linha, sizeof(linha), frelacao))
 	{
 		i = 0;
 		char *valor = strtok(linha,",");
 		char linhaSaida[50];	
+		strcpy(linhaSaida,"");
 		while(auxAtr)
 		{
-			strcpy(linhaSaida,"");
+			//dentro da linha lida, procura pelo valor esperado
 			while(i < auxAtr->indice) 
 			{
 				i++;
@@ -546,17 +573,18 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 			}
 			quantVal++;
 			strcat(linhaSaida,valor);
-			valor = strtok(linhaSaida,"\n");
+			printf("LINHA: %s\n",linhaSaida);
 			if(quantVal != grau)
 				strcat(linhaSaida,",");
 			auxAtr = auxAtr->prox;
 		}
-		fprintf(fsaida,"%s\n",valor);
+		tiraQuebra(linhaSaida);
+		fprintf(fsaida,"%s\n",linhaSaida);
+		auxAtr = atr;
 	}
 	fclose(fsaida);
 	fclose(frelacao);
 	libera(atr);
-	printf("Projecao concluida");
 }
 
 void interpreta(char *inst)
@@ -603,13 +631,10 @@ void interpreta(char *inst)
 		char *lista_aux = strtok(NULL,",");
 		char *lista = malloc(sizeof(char) * 50); //(André)é necessário uma lista auxiliar?(Alysson)acho q nao
 		strcpy(lista,lista_aux);	
-		strcat(lista,",");
 		for(i=1;i<num;i++){
-			strcat(lista,strtok(NULL,"(,)"));
 			strcat(lista,",");
+			strcat(lista,strtok(NULL,"(,)"));
 		}
-		printf("%s",lista);
-		printf("%d",num);
 		char saida[50];
 		strcpy(saida,strtok(NULL,"(,)"));
 		projecao(relacao,n,lista,saida);

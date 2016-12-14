@@ -469,12 +469,12 @@ int main(int argc, char *argv[]){
                         char relA[20];
                         char arqAnterior[20];
                         int nAtributos=0;
-
+							
                         if(strcmp(atributos,"*")){
-                        	nAtributos = 1;
-                        	token = strtok(NULL,",\n");
+                        	nAtributos = 0;
+                        	token = strtok(result,",\n");
                         	while(token){
-                        		strcat(atributos,token);
+                        		//strcat(atributos,token);
                         		nAtributos++;
                         		token = strtok(NULL,",\n");
                         	}
