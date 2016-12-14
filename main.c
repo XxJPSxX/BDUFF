@@ -249,6 +249,11 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
             }
             nomeTab[strlen(nomeTab)-1] = 0;
             strcat(nomeTab,".dad");
+            //troca as aspas
+            for(i=0;i<grau;i++){
+                if(valoresSep[i][0]=='\"') valoresSep[i][0]='\'';
+                if(valoresSep[i][strlen(valoresSep[i])-1]=='\"') valoresSep[i][strlen(valoresSep[i])-1]='\'';
+            }
             //se o arquivo estiver vazio só coloca no arquivo
             if(ch==0){
                 FILE *arqDados= fopen(nomeTab, "w");
