@@ -224,7 +224,11 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
             //se o arquivo estiver vazio só coloca no arquivo
             if(ch==0){
                 FILE *arqDados= fopen(nomeTab, "w");
-                fprintf(arqDados,"%s,%s,%s\n",valoresSep[0],valoresSep[1],valoresSep[2]);
+                for(i=0;i<grau;i++){
+                    if(i==grau-1) fprintf(arqDados,"%s",valoresSep[i]);
+                    else fprintf(arqDados,"%s ",valoresSep[i]);
+                }
+                fprintf(arqDados,"\n");
                 fclose(arqDados);
             }
             else{
@@ -276,7 +280,11 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                                 posSalvou++;
                             }
                             else if(!salvouAtual){
-                                fprintf(arqMaior,"%s,%s,%s\n",valoresSep[0],valoresSep[1],valoresSep[2]);
+                                for(i=0;i<grau;i++){
+                                    if(i==grau-1) fprintf(arqDados,"%s",valoresSep[i]);
+                                    else fprintf(arqDados,"%s ",valoresSep[i]);
+                                }
+                                fprintf(arqDados,"\n");
                                 fprintf(arqMaior,"%s",linhaAux);
                                 salvouAtual=1;
                             }
@@ -301,8 +309,11 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                     }
                     fclose(arqMaior);
                     if(!salvouAtual){
-                        printf("%s,%s,%s \n",valoresSep[0],valoresSep[1],valoresSep[2]);
-                        fprintf(arqDados,"%s,%s,%s \n",valoresSep[0],valoresSep[1],valoresSep[2]);
+                        for(i=0;i<grau;i++){
+                            if(i==grau-1) fprintf(arqDados,"%s",valoresSep[i]);
+                            else fprintf(arqDados,"%s ",valoresSep[i]);
+                        }
+                        fprintf(arqDados,"\n");
                         fclose(arqDados);
                     }
                     fclose(arqMaior);
@@ -312,7 +323,11 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                 //se ele for o maior insere no final
                 else{
                     FILE *arqDados= fopen(nomeTab, "a");
-                    fprintf(arqDados,"%s,%s,%s \n",valoresSep[0],valoresSep[1],valoresSep[2]);
+                    for(i=0;i<grau;i++){
+                        if(i==grau-1) fprintf(arqDados,"%s",valoresSep[i]);
+                        else fprintf(arqDados,"%s ",valoresSep[i]);
+                    }
+                    fprintf(arqDados,"\n");
                     fclose(arqDados);
                 }
             }
