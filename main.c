@@ -7,7 +7,6 @@ void createTable(char *nomeArq, char *nomeTab){
     char linha[100];
     char *token;
     char *verificador;
-
     int ch=0;
     int grau=0;
     char *aux = malloc(strlen(nomeTab) + 1);
@@ -21,6 +20,7 @@ void createTable(char *nomeArq, char *nomeTab){
      //CALCULA GRAU
     while(!feof(arqComandos))
     {
+        printf("aa");
         ch = fgetc(arqComandos);
         if(ch == '\n')
         {
@@ -35,6 +35,7 @@ void createTable(char *nomeArq, char *nomeTab){
     //LÊ PRIMEIRA LINHA SEM REALIZAR NENHUMA OPERAÇÃO, POIS JÁ FOI LIDA ANTERIORMENTE
     fgets(linha, sizeof(linha), arqComandos);
     //ENQUAcNTO EXISTIR UMA LINHA NOVA
+    printf("aaa");
     while(fgets(linha, sizeof(linha), arqComandos)){
         //LÊ E ESCREVE NOME DO ATRIBUTO
         printf("LINHA: %s\n", linha);
@@ -184,6 +185,7 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                     if(!strcmp(token,"C") || !strcmp(token,"C\n")){
                         if((valoresSep[i][0]!='"' || valoresSep[i][strlen(valoresSep[i])-1]!='"')){
                                 if(strcmp(valoresSep[i],"NULO")!=0){
+                                    printf("Erro nos tipos das variaveis");
                                     return;
                                 }
                         }
@@ -191,12 +193,16 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                     //se é int
                     else if(!strcmp(token,"I") || !strcmp(token,"I\n")){
                         if(!atoi(valoresSep[i])) {
+                                printf("Erro nos tipos das variaveis");
                                 return;
                         }
                     }
                     //se é not null
                     else if(!strcmp(token,"nn") || !strcmp(token,"nn\n")){
-                        if(strcmp(valoresSep[i],"NULO")==0) return;
+                        if(strcmp(valoresSep[i],"NULO")==0) {
+                            printf("Erro nos tipos das variaveis");
+                            return;
+                        }
                     }
                     //verifica se é chave,se for ele verifica se tem valor repetido nos dados
                     else if(!strcmp(token,"chv") || !strcmp(token,"chv\n")){
@@ -238,6 +244,7 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                                     j++;
                                 }
                                 //depois de achado o valor da linha da coluna que quero,eu verifico se sao iguais,se sim return
+                                if(token[strlen(token)-1]=='\n') token[strlen(token)-1] = 0;
                                 if(strcmp(token,valoresSep[i])==0) return;
                         }
                         fclose(arqDados);
@@ -294,14 +301,12 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                     }
                     fclose(arqMaior);
                     if(!salvouAtual){
-                        FILE *arqDados= fopen(nomeTab, "a");
+                        printf("%s,%s,%s \n",valoresSep[0],valoresSep[1],valoresSep[2]);
                         fprintf(arqDados,"%s,%s,%s \n",valoresSep[0],valoresSep[1],valoresSep[2]);
                         fclose(arqDados);
                     }
                     fclose(arqMaior);
                     fclose(arqMenor);
-                    remove("auxDadosMaior.txt");
-                    remove("auxDadosMenor.txt");
                     fclose(arqDados);
                 }
                 //se ele for o maior insere no final
@@ -319,12 +324,16 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
         }
 		else{
 			printf("Erro na quantidade de valores inseridos");
+            fclose(arqInfos);
+            fclose(arqComandos);
+            return;
 		}
         fclose(arqInfos);
         fclose(arqComandos);
     }
 	else{
 		printf("Erro de arquivo");
+		return;
     }
     printf("Insercao concluida");
     fclose(arqInfos);
@@ -387,15 +396,15 @@ int main(int argc, char *argv[]){
                 }else{
                     if(strcmp(token,"SELECT")==0){
                         //INICIAR SELECAO
-                        
+
                         char saida[50];
                         strcpy(saida,"comandoAlgebra.alg");
                         FILE *arqAlgebra = fopen(saida, "wt");
-			        	
+
 			        	printf("abriu o arq");
-			        	
+
                         token = strtok(NULL, " \n");
-                             
+
                         char result[50];
                         strcpy(result,token);
                         if(1)
@@ -403,11 +412,11 @@ int main(int argc, char *argv[]){
                         	char atributos[100];
 						   	strcpy(atributos,result);
                         	char aux1[100];
-                        	
+
                         	char relA[20];
                         	char arqProj[20];
                         	int nAtributos=0;
-                        	
+
                         	if(strcmp(atributos,"*")){
                         		nAtributos = 1;
                         		token = strtok(NULL,",\n");
@@ -415,10 +424,10 @@ int main(int argc, char *argv[]){
                         			strcat(atributos,token);
                         			nAtributos++;
                         			token = strtok(NULL,",\n");
-                        		}	
+                        		}
                         	}
-                        	
-                        	
+
+
                         	if(fgets(aux1, sizeof(aux1), arqComandos)){
                         			token = strtok(aux1, " ");
                         			printf("%s",token);
@@ -426,38 +435,38 @@ int main(int argc, char *argv[]){
                         				token = strtok(NULL, " ");
                         				//char relA[20];
                         				strcpy(relA,token);
-                        				
+
                         				strcpy(arqProj,relA);
-                        				
+
                         				//testa se existe join
                         				token = strtok(NULL, " ");
                         				if(token){
                         					//existe join
-                        				}       
+                        				}
                         				else{
                         					//verifica se existe WHERE
-                        					
+
                         					char aux2[100];
                         					if(fgets(aux2, sizeof(aux2), arqComandos)){
                         						token = strtok(aux2, " ");
                         						if(strcmp(token,"WHERE")==0){
-                        							
+
                         							//char *val = strtok(NULL, "=<>");
-                        							
+
                    									token = strtok(NULL, " ");
-                   									
+
                    									char cond[100], cond_aux[100];
                    									strcpy(cond,token); //cond guarda a condicao de selecao
-                   									strcpy(cond_aux,cond);                   									
-                   									
+                   									strcpy(cond_aux,cond);
+
                    									char op[3];
-                   									printf("condicao: %s",cond);             									
+                   									printf("condicao: %s",cond);
                    									if((strstr(cond,"<>") != NULL)){
                    									 	strcpy(op,"<>");
                    									}
                    									else if(strstr(cond,"<=") != NULL){
                											strcpy(op,"<=");
-               											
+
                										}
                										else if(strstr(cond,">=") != NULL){
            												strcpy(op,">=");
@@ -465,7 +474,7 @@ int main(int argc, char *argv[]){
            											else if(strstr(cond,"=") != NULL){
        														strcpy(op,"=");
        												}
-       												else if(strstr(cond,">") != NULL){ 
+       												else if(strstr(cond,">") != NULL){
        													strcpy(op,">");
    													}
                    									else if(strstr(cond,"<") != NULL){
@@ -474,19 +483,19 @@ int main(int argc, char *argv[]){
 													else{
 														exit(1);
 													}
-													
+
                    									//char separa[5];
                    									//strcpy(separa,op);
                    									//strcat(separa,";");
-                   									
+
                    									printf("%s",op);
-                   									
+
                    									char *atr = strtok(cond,op);
                    									char *val = strtok(NULL,op);
-                   									
+
                    									printf("%s",atr);
                    									printf("%s",val);
-                   									
+
                    									relA[strlen(relA)-1]=0;
                    									val[strlen(val)-1]=0;
                    									char comando[100]; //vai concatenar td
@@ -500,22 +509,22 @@ int main(int argc, char *argv[]){
                    									strcat(comando,val);
                    									strcat(comando,",");
                    									strcat(comando,"RESULTADO_SELECAO");
-                   									
+
                    									strcpy(arqProj,"RESULTADO_SELECAO");
-                   									
+
                    									strcat(comando,")");
-                   									
+
                    									//printf("%s",comando);
                    									fprintf(arqAlgebra,"%s\n", comando);
-                   									
+
                         							interpreta(comando);
-                        							
+
                         					}
                         					else{
                         						//imprimeTabela(relA); //o resultado e a propria tabela
                         					}
-                        					
-                        					
+
+
                         					if(strcmp(atributos,"*"))
                         					{
                         						//faz projeção
@@ -533,23 +542,23 @@ int main(int argc, char *argv[]){
                         						strcat(comando,"RESULTADO_FINAL");
                         						strcat(comando,")");
                         						//P(arqProj,nAtributos,atributos,"RESULTADO_FINAL");
-                        						
+
                         						fprintf(arqAlgebra,"%s\n",comando);
                         						interpreta(comando);
-                        								
+
                         					}
                         				}
-                        			} 
-                        	}	
+                        			}
+                        	}
                         }
                         else{
                         	//lista de atributos
                         	//projecao(char *relacao, char *n, char *lista, char *saida)
-                        	
+
                         }
                     	fclose(arqAlgebra);
                     }
-                    
+
                 }
             }
 
