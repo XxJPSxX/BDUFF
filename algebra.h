@@ -72,19 +72,23 @@ TAtr *busca(TAtr *a, char *valor)
 TAtr *junta_mudando_nomes(TAtr *a, TAtr *b,char *relA, char *relB)
 {
 	TAtr *resp = NULL;
+	//quando a relação é igual
 	if(!strcmp(relA,relB))
 	{
 		TAtr *aux = a;
 		int i = 1;
+		//variavel que rece a string do contador
+		char cont[2];
+		sprintf(cont, "%d", i);
+		
 		while(aux)
 		{
-			char atributo[sizeof(aux->atr) + 2],con[2];
-			sprintf(con, "%d", i);
+			char atributo[sizeof(aux->atr) + 2];
 			
 			//separa so o nome do atributo
 			char *nome = strtok(aux->atr,",");
 			strcpy(atributo, nome);
-			strcat(atributo, con);
+			strcat(atributo, cont);
 			strcat(atributo,",");
 			//pega o resto da linha com o not null e ordenação
 			nome = strtok(NULL,"");
@@ -92,20 +96,18 @@ TAtr *junta_mudando_nomes(TAtr *a, TAtr *b,char *relA, char *relB)
 			//----------------------------
 			strcpy(aux->atr,atributo);
 			aux = aux->prox;
-			i++;
 		}
 		
 		aux = b;
-		i = 1;
+		i++;
+		sprintf(cont, "%d", i);
 		while(aux)
 		{
-			char atributo[sizeof(aux->atr) + 2],con[2];
-			sprintf(con, "%d", i);
-
+			char atributo[sizeof(aux->atr) + 2];
 			//separa so o nome do atributo
 			char *nome = strtok(aux->atr,",");
 			strcpy(atributo, nome);
-			strcat(atributo, con);
+			strcat(atributo, cont);
 			strcat(atributo,",");
 			//pega o resto da linha com o not null e ordenação
 			nome = strtok(NULL,"");
@@ -113,7 +115,6 @@ TAtr *junta_mudando_nomes(TAtr *a, TAtr *b,char *relA, char *relB)
 			//----------------------------
 			strcpy(aux->atr,atributo);
 			aux = aux->prox;
-			i++;
 		}
 	}
 	else
@@ -374,6 +375,8 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 	
 	//guarda na primeira linha do arquivo ctl os espaços para o grau e a cardinalidade
 	fgets(linha, sizeof(linha), arqA);	
+	fprintf(fsaida,"%s",linha);
+	
 	while(fgets(linha, sizeof(linha), arqA))
 	{
 		if(strcmp(linha,"\n"))a = insere_fim(a,linha,i);
@@ -402,6 +405,7 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 	//copia os atributos pro arquivo ctl
 	while(aux)
 	{
+		printf("CTL: %s\n",aux->atr);
 		fprintf(fsaida,"%s\n",aux->atr);
 		aux = aux->prox;
 	}
