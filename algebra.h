@@ -12,20 +12,37 @@ typedef struct atributo
 	struct atributo *prox;
 }TAtr;
 
-void pegaAntesDeTok(char *string, char tok)
-{
-	int i;
-	char aux[strlen(string)];
-	strcpy(aux,string);
-  	memset(string, '\0', sizeof(string));
-	for(i = 0; i < strlen(aux);++i)
-	{
-		if(aux[i] == tok)
-		{
-			break;
-		}
-	}
-	strncpy(string, aux, i);
+char **strsplit(const char* str, const char* delim, size_t* numtokens) {
+    // copy the original string so that we don't overwrite parts of it
+    // (don't do this if you don't need to keep the old line,
+    // as this is less efficient)
+    char *s = strdup(str);
+    // these three variables are part of a very common idiom to
+    // implement a dynamically-growing array
+    size_t tokens_alloc = 1;
+    size_t tokens_used = 0;
+    char **tokens = calloc(tokens_alloc, sizeof(char*));
+    char *token, *strtok_ctx;
+    for (token = strtok_r(s, delim, &strtok_ctx);
+            token != NULL;
+            token = strtok_r(NULL, delim, &strtok_ctx)) {
+        // check if we need to allocate more space for tokens
+        if (tokens_used == tokens_alloc) {
+            tokens_alloc *= 2;
+            tokens = realloc(tokens, tokens_alloc * sizeof(char*));
+        }
+        tokens[tokens_used++] = strdup(token);
+    }
+    // cleanup
+    if (tokens_used == 0) {
+        free(tokens);
+        tokens = NULL;
+    } else {
+        tokens = realloc(tokens, tokens_used * sizeof(char*));
+    }
+    *numtokens = tokens_used;
+    free(s);
+    return tokens;
 }
 
 void tiraQuebra(char *string)
@@ -46,9 +63,11 @@ TAtr *insere_fim(TAtr *l,char *atr, int i)
 	novo->atr = malloc(strlen(atr));
 	strcpy(novo->atr,atr);	
 	novo->at = malloc(sizeof(char)*20);	
-	pegaAntesDeTok(atr,',');
-	strcpy(novo->at,atr);
-	printf("AT>%s\n",atr);
+	
+	size_t numtokens;
+	char **tokens = strsplit(atr,",",&numtokens);
+
+	strcpy(novo->at,tokens[0]);
 	if(aux) 
 	{
 		while(aux->prox) aux = aux->prox;
@@ -158,7 +177,7 @@ void selecao(char *relacao, char *atr, char *op, char *val, char *saida)
 	if(!fsaida)exit(1);	
 	
 	//linha do arquivo que será lido
-	char linha[50];
+	char linha[200];
 	int i = 0,atrib = -1;	
 	
 	//faz a primeira leitura para guardar o grau da relação(não muda na operação de seleção)
@@ -196,7 +215,7 @@ void selecao(char *relacao, char *atr, char *op, char *val, char *saida)
 	free(aux);
 	if(!fsaida)exit(1);	
 
-	char linha_aux[100];
+	char linha_aux[200];
 	//guarda a cardinalidade da relação
 	int cont = 0;
 	while(fgets(linha, sizeof(linha), frelacao))
@@ -207,7 +226,7 @@ void selecao(char *relacao, char *atr, char *op, char *val, char *saida)
 		for(i = 0; i < atrib ;i++) tkn = strtok(NULL,","); 
 		//se a comparar funcionar, escreve o arquivo a atualiza o contador
 		if(compara(op,val,tkn)) 
-		{
+		{	
 			fprintf(fsaida,"%s", linha_aux);
 			cont++;
 		}
@@ -357,7 +376,7 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 {
 	//separa os atributos da comparação
 	char *tkn = strtok(con,"=");
-	char atrA[20], atrB[20];
+	char atrA[100], atrB[100];
 	strcpy(atrA,tkn);
 	tkn = strtok(NULL,"=");
 	strcpy(atrB,tkn);
@@ -373,7 +392,7 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 	if(!arqA)exit(1);
 	free(arq);
 		
-	char linha[50];
+	char linha[200];
 	int i = 0;
 	//lista auxiliares para construção do arquivo
 	TAtr *a = NULL, *b = NULL;
@@ -412,11 +431,10 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 	//copia os atributos pro arquivo ctl
 	while(aux)
 	{
-		printf("atr:%s\n",aux->atr);
 		fprintf(fsaida,"%s\n",aux->atr);
 		aux = aux->prox;
 	}
-
+	
 	fclose(fsaida);
 	fclose(arqA);
 	fclose(arqB);
@@ -437,7 +455,7 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 	if(!arqB)exit(1);
 	free(arq);	
 	
-	char linhaA[100], linhaB[100];
+	char linhaA[150], linhaB[150];
 	int card = 0;
 	
 	while(fgets(linhaA, sizeof(linhaA), arqA))
@@ -451,7 +469,7 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 			if(compara("=",valA,valB))
 			{
 				//variavel criada para guarda o valor da linhaA, a qual so é lida uma vez e estava sendo alterada indevidamente sem o uso deste
-				char aux_junta[50];
+				char aux_junta[300];
 				strcpy(aux_junta,linhaA);
 
 				char *linha = junta(aux_junta,linhaB);
@@ -498,7 +516,7 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 	if(!fsaida)exit(1);	
 	
 	//escreve o novo grau e a cardinalidade(que nao se altera) na saida
-	char linha[50],lin[50] ;
+	char linha[200],lin[200] ;
 	fgets(linha, sizeof(linha), frelacao);
 	char *grau_antigo = strtok(linha,",");
 	char *cardin = strtok(NULL,",");
@@ -510,22 +528,23 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 	//converte a lista de atributos em char para uma lista de atributos struct
 	char copia[strlen(lista)];
 	strcpy(copia,lista);
+
 	char *atributo = strtok(copia,",");
 	TAtr *atr = NULL;
+	
 	while(atributo)
 	{	
-		printf("Atributo:%s",atributo);		
-		atr = insere_fim(atr,atributo,-1);
+		atr = insere_fim(atr,atributo,0);
 		atributo = strtok(NULL,",");
-	}
 
+	}
+	
 	int i = 0;
 	//le o arquivo ctl para procurar pelas infos relevantes
 	while(fgets(linha, sizeof(linha), frelacao))
 	{
 		printf("%d",i);
 		char aux[20];
-		printf("%sha",linha);
 		strcpy(aux,linha);
 		if(strcmp(aux,"\n"))
 		{
@@ -560,25 +579,29 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 	int quantVal = 0;
 	int grau = atoi(n);
 	auxAtr = atr;
-	
+	imprime(atr);
 	while(fgets(linha, sizeof(linha), frelacao))
 	{
 		i = 0;
 		char *valor = strtok(linha,",");
-		char linhaSaida[50];	
+		char linhaSaida[200];	
 		strcpy(linhaSaida,"");
 		while(auxAtr)
 		{
 			//dentro da linha lida, procura pelo valor esperado
-			while(i < auxAtr->indice) 
+			while(valor && i < auxAtr->indice) 
 			{
 				i++;
 				valor = strtok(NULL,","); 
 			}
-			quantVal++;
-			strcat(linhaSaida,valor);
-			if(quantVal != grau)
-				strcat(linhaSaida,",");
+			if(valor)
+			{
+				printf("VALOR>%s",valor);
+				quantVal++;
+				strcat(linhaSaida,valor);
+				if(quantVal != grau)
+					strcat(linhaSaida,",");
+			}
 			auxAtr = auxAtr->prox;
 		}
 		tiraQuebra(linhaSaida);
