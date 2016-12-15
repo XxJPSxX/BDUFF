@@ -15,15 +15,17 @@ typedef struct atributo
 void pegaAntesDeTok(char *string, char tok)
 {
 	int i;
-	for(i = 0; i < strlen(string);++i)
+	char aux[strlen(string)];
+	strcpy(aux,string);
+  	memset(string, '\0', sizeof(string));
+	for(i = 0; i < strlen(aux);++i)
 	{
-		if(string[i] == tok)
+		if(aux[i] == tok)
 		{
 			break;
 		}
 	}
-	strncpy(string, string, i);
-	strcat(string,"\0");
+	strncpy(string, aux, i);
 }
 
 void tiraQuebra(char *string)
@@ -46,6 +48,7 @@ TAtr *insere_fim(TAtr *l,char *atr, int i)
 	novo->at = malloc(sizeof(char)*20);	
 	pegaAntesDeTok(atr,',');
 	strcpy(novo->at,atr);
+	printf("AT>%s\n",atr);
 	if(aux) 
 	{
 		while(aux->prox) aux = aux->prox;
@@ -77,14 +80,12 @@ void imprime(TAtr *a)
 
 TAtr *busca(TAtr *a, char *valor)
 {
-	printf("Valor:%s\n",valor);
 	while(1) 
 	{
 		if(a == NULL) return NULL;
-		printf("a->at:%s\n",a->at);
+		printf("\nValor:%s\n",a->at);
 		if(strcmp(a->at,valor) == 0)
 		{
-			printf("Achei: %s\n",a->at);
 			return a;
 		}
 		a = a->prox;
@@ -236,11 +237,11 @@ char *pegaVal(TAtr *a, char *atr, char *linha)
 	strcpy(aux,linha);
 	tiraQuebra(aux);
 	
-	char *tkn = strtok(aux," ,");
+	char *tkn = strtok(aux,",");
 	char *resp = malloc(sizeof(char) * 20);
 	while(a && strcmp(atr,a->at))
 	{
-		tkn = strtok(NULL," ,");
+		tkn = strtok(NULL,",");
 		a = a->prox;
 	}
 	strcpy(resp,tkn);
@@ -251,6 +252,7 @@ char *junta(char *linhaA, char *linhaB)
 {
 	strcat(linhaA,",");
 	strcat(linhaA,linhaB);
+	tiraQuebra(linhaA);
 	return linhaA;
 }
 
@@ -359,7 +361,7 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 	strcpy(atrA,tkn);
 	tkn = strtok(NULL,"=");
 	strcpy(atrB,tkn);
-
+	
 	//abre os arquivos de catálogo para descobrir qual será o atributo testado
 	char *arq = geraNomeArq(saida,".ctl");
 	FILE *fsaida = fopen(arq,"wt");
@@ -371,7 +373,7 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 	if(!arqA)exit(1);
 	free(arq);
 		
-	char linha[30];
+	char linha[50];
 	int i = 0;
 	//lista auxiliares para construção do arquivo
 	TAtr *a = NULL, *b = NULL;
@@ -382,7 +384,8 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 	
 	while(fgets(linha, sizeof(linha), arqA))
 	{
-		if(strcmp(linha,"\n"))a = insere_fim(a,linha,i);
+		if(strcmp(linha,"\n"))
+			a = insere_fim(a,linha,i);
 		i++;
 	}
 		
@@ -398,7 +401,8 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 	
 	while(fgets(linha, sizeof(linha), arqB))
 	{
-		if(strcmp(linha,"\n"))b = insere_fim(b,linha,i);
+		if(strcmp(linha,"\n"))
+			b = insere_fim(b,linha,i);
 		i++;
 	}
 
@@ -408,6 +412,7 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 	//copia os atributos pro arquivo ctl
 	while(aux)
 	{
+		printf("atr:%s\n",aux->atr);
 		fprintf(fsaida,"%s\n",aux->atr);
 		aux = aux->prox;
 	}
@@ -432,19 +437,17 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 	if(!arqB)exit(1);
 	free(arq);	
 	
-	char linhaA[50], linhaB[50];
+	char linhaA[100], linhaB[100];
 	int card = 0;
 	
-	while(fgets(linhaA, sizeof(linhaA), arqA) && strcmp(linhaA,"\n"))
+	while(fgets(linhaA, sizeof(linhaA), arqA))
 	{
 		tiraQuebra(linhaA);
 		char *valA = pegaVal(a,atrA,linhaA);
-		
-		while(fgets(linhaB, sizeof(linhaB), arqB) && strcmp(linhaB,"\n"))
+		while(fgets(linhaB, sizeof(linhaB), arqB))
 		{
 			tiraQuebra(linhaB);
 			char *valB = pegaVal(b,atrB,linhaB);
-						
 			if(compara("=",valA,valB))
 			{
 				//variavel criada para guarda o valor da linhaA, a qual so é lida uma vez e estava sendo alterada indevidamente sem o uso deste
@@ -453,9 +456,9 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 
 				char *linha = junta(aux_junta,linhaB);
 				fprintf(fsaida,"%s\n", linha);
+				printf("Linha:%s\n",linha);
 				card++;
 			}
-
 			free(valB);
 		}
 		free(valA);
@@ -471,10 +474,10 @@ void juncao(char *relA, char *relB, char *con, char *saida)
 	free(arq);		
 	fprintf(fsaida,"%d,%d", conta(atributos),card);
 	
-	fclose(fsaida);
-	libera(atributos);
 	libera(a);
 	libera(b);
+	fclose(fsaida);
+	libera(atributos);
 }
 
 void projecao(char *relacao, char *n, char *lista, char *saida)
@@ -505,16 +508,17 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 	fprintf(fsaida,"%s", lin);
 	
 	//converte a lista de atributos em char para uma lista de atributos struct
-	tiraQuebra(lista);
-	char *atributo = strtok(lista,",");
+	char copia[strlen(lista)];
+	strcpy(copia,lista);
+	char *atributo = strtok(copia,",");
 	TAtr *atr = NULL;
 	while(atributo)
-	{
+	{	
+		printf("Atributo:%s",atributo);		
 		atr = insere_fim(atr,atributo,-1);
 		atributo = strtok(NULL,",");
 	}
-	imprime(atr);
-	
+
 	int i = 0;
 	//le o arquivo ctl para procurar pelas infos relevantes
 	while(fgets(linha, sizeof(linha), frelacao))
@@ -527,7 +531,7 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 		{
 			char *nomeAtr = strtok(aux,",");
 			TAtr *auxAtr = busca(atr,nomeAtr);
-			if(auxAtr != NULL) 
+			if(auxAtr) 
 			{
 				auxAtr->indice = i;
 				fprintf(fsaida,"%s", linha);
