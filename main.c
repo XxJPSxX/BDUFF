@@ -345,18 +345,18 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
                     while(fgets(linhaAux, sizeof(linhaAux), arqMenor)){
                         fprintf(arqDados,"%s",linhaAux);
                     }
-                    fclose(arqMenor);
+                    //(arqMenor);
                     while(fgets(linhaAux, sizeof(linhaAux), arqMaior)){
                         fprintf(arqDados,"%s",linhaAux);
                     }
-                    fclose(arqMaior);
+                    //fclose(arqMaior);
                     if(!salvouAtual){
                         for(i=0;i<grau;i++){
                             if(i==grau-1) fprintf(arqDados,"%s",valoresSep[i]);
                             else fprintf(arqDados,"%s,",valoresSep[i]);
                         }
                         fprintf(arqDados,"\n");
-                        fclose(arqDados);
+                        //fclose(arqDados);
                     }
                     fclose(arqMaior);
                     fclose(arqMenor);
