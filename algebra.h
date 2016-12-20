@@ -161,6 +161,40 @@ int compara(char *op, char *val1, char *val2)
 	}
 }
 
+int comparaInt(char *op, char *val1, char *val2)
+{	
+	int a = atoi(val1),b = atoi(val2);
+	if(strcmp(op,"<") == 0)
+	{
+		printf("%d < %d = %d",a,b,a<b);
+		return a < b;
+	}
+	
+	if(strcmp(op,">") == 0)
+	{
+		return a > b;
+		
+	}
+	if(strcmp(op,"=") == 0)
+	{		
+		return a = b;
+	}
+	if(strcmp(op,"<=") == 0)
+	{
+		return a <= b;
+	}
+	if(strcmp(op,">=") == 0)
+	{
+		return  a >= b;
+	}
+	if(strcmp(op,"<>") == 0)
+	{
+		return a != b;
+	}
+	return 0;
+}
+
+
 void selecao(char *relacao, char *atr, char *op, char *val, char *saida)
 {
 	//copiar catalogo para o saida e depois copiar as tuplas que interessam ao op e ao val
@@ -175,6 +209,7 @@ void selecao(char *relacao, char *atr, char *op, char *val, char *saida)
 	FILE *fsaida = fopen(aux,"wt");
 	free(aux);
 	if(!fsaida)exit(1);	
+	int ehI = 0;
 	
 	//linha do arquivo que será lido
 	char linha[200];
@@ -197,7 +232,12 @@ void selecao(char *relacao, char *atr, char *op, char *val, char *saida)
 		fprintf(fsaida,"%s", linha);
 		//daqui pra baixo é pra saber qual atributo devo comparar, pra ler o ".clt" uma vez só
 		char *atrname = strtok(linha,",");
-		if(!strcmp(atr,atrname))atrib = i;
+		if(!strcmp(atr,atrname))
+		{
+			atrib = i;
+			atrname = strtok(NULL,",");
+			if(!strcmp(atrname,"I"))ehI = 1;
+		}
 		i++;
 	}
 	//fecha os arquivos de ".ctl"
@@ -225,11 +265,20 @@ void selecao(char *relacao, char *atr, char *op, char *val, char *saida)
 		//serve pra chegar no atributo que quero
 		for(i = 0; i < atrib ;i++) tkn = strtok(NULL,","); 
 		//se a comparar funcionar, escreve o arquivo a atualiza o contador
-		if(compara(op,val,tkn)) 
-		{	
-			fprintf(fsaida,"%s", linha_aux);
-			cont++;
+		if(ehI)
+		{
+			if(comparaInt(op,tkn,val)) 
+			{	
+				fprintf(fsaida,"%s", linha_aux);
+				cont++;
+			}
 		}
+		else
+			if(compara(op,val,tkn)) 
+			{	
+				fprintf(fsaida,"%s", linha_aux);
+				cont++;
+			}
 	}
 	
 	fclose(fsaida);
@@ -536,7 +585,6 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 	{	
 		atr = insere_fim(atr,atributo,0);
 		atributo = strtok(NULL,",");
-
 	}
 	
 	int i = 0;
@@ -596,12 +644,13 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 			}
 			if(valor)
 			{
-				printf("VALOR>%s",valor);
 				quantVal++;
 				strcat(linhaSaida,valor);
 				if(quantVal != grau)
 					strcat(linhaSaida,",");
 			}
+			i = 0;
+			valor = strtok(linha,",");
 			auxAtr = auxAtr->prox;
 		}
 		tiraQuebra(linhaSaida);

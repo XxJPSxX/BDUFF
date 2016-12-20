@@ -488,21 +488,22 @@ int main(int argc, char *argv[]){
                         		token = strtok(NULL, " (");
                         		//char relA[20];
                         		strcpy(relA,token);
-
                         		strcpy(arqAnterior,relA);
 
                         		//verifica se existe join
                         		token = strtok(NULL, " ");
                         		if(token){
                         			//existe join
+                        			printf("cheguei no ON");
+                        			printf("token %s",token);
                         			if(strcmp(token,"JOIN")==0){
                         				char *relB = strtok(NULL, " ");
                         				char cond[50];
                         				token = strtok(NULL, " ");
+                        				printf("cheguei no ON");
                         				if(strcmp(token,"ON")==0){
                         					token = strtok(NULL, " )");
                         					strcpy(cond,token);
-
 
                         					//faltam os tratamentos pra tirar \n e coisas assim
                         					char comando[100]; //vai concatenar td
@@ -601,7 +602,7 @@ int main(int argc, char *argv[]){
                    						fprintf(arqAlgebra,"%s\n", comando);
 
                         				interpreta(comando);
-                                        imprimeTabela(arqAnterior);
+                                        //imprimeTabela(arqAnterior);
                         			}
                         			else{
                         				// TA ERRADO TEM Q MODIFICAR ESSE CASO DO IMPRIME TABELA
