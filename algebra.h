@@ -177,7 +177,7 @@ int comparaInt(char *op, char *val1, char *val2)
 	}
 	if(strcmp(op,"=") == 0)
 	{		
-		return a = b;
+		return a == b;
 	}
 	if(strcmp(op,"<=") == 0)
 	{
