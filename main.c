@@ -3,6 +3,12 @@
 #include <string.h>
 #include "algebra.h"
 
+void tiraPontoV(char *a)
+{
+    char *ponto = strchr(a,';');
+    if(ponto) *ponto = 0;
+}
+
 void createTable(char *nomeArq, char *nomeTab){
     char linha[100];
     char *token;
@@ -35,16 +41,21 @@ void createTable(char *nomeArq, char *nomeTab){
     //LÊ PRIMEIRA LINHA SEM REALIZAR NENHUMA OPERAÇÃO, POIS JÁ FOI LIDA ANTERIORMENTE
     fgets(linha, sizeof(linha), arqComandos);
     //ENQUAcNTO EXISTIR UMA LINHA NOVA
-    printf("aaa");
+    //printf("aaa");
     while(fgets(linha, sizeof(linha), arqComandos)){
         //LÊ E ESCREVE NOME DO ATRIBUTO
         printf("LINHA: %s\n", linha);
         token = strtok(linha, " ");
         fprintf(arqInfos,"%s",token);//Escreve nome do atributo
-        printf("Escrevi: %s\n", token);
+        printf("Escrevi: %shaha\n", token);
         token = strtok(NULL, " ");
-        if(token[strlen(token)-1] == ')'){//tirei o caso do -2, ver se da erro
+        int i;
+        for(i = 0; i < strlen(token); i++){
+            printf("token:%c %d\n",token[i],i);
+        }
+       if(token[strlen(token)-1] == ')'){//tirei o caso do -2, ver se da erro
                 //Acabou comando
+                printf("acabei o arquivo");
                 token[strlen(token)-1]=0;
                 if(strcmp(token, "STRING")==0){
                     char tipo = 'C';
@@ -55,7 +66,6 @@ void createTable(char *nomeArq, char *nomeTab){
                     fprintf(arqInfos,",%c", tipo);//Escreve tipo do atributo
                     printf("Escrevi: %c\n", tipo);
                 }
-
                 break;
         }
         if(token[strlen(token)-2] == ','){
@@ -82,9 +92,9 @@ void createTable(char *nomeArq, char *nomeTab){
                 printf("Escrevi: %c\n", tipo);
             }
             token = strtok(NULL, " ");
-            if(token[strlen(token)-1] == ')'){
+            if(token[strlen(token)-2] == ')'){
                 //Acabou comando
-                token[strlen(token)-1]=0;
+                token[strlen(token)-2]=0;
                 fprintf(arqInfos,",%s",token);
                 printf("Escrevi: %s\n", token);
                 break;
@@ -385,8 +395,8 @@ void insertTable(char *nomeArq, char *nomeTab,char *valores){
 		return;
     }
     printf("Insercao concluida");
-    fclose(arqInfos);
-    fclose(arqComandos);
+    /*fclose(arqInfos);
+    fclose(arqComandos);*/
 }
 
 int main(int argc, char *argv[]){
@@ -437,6 +447,7 @@ int main(int argc, char *argv[]){
                                     {
                                         token = strtok(NULL, " ");
                                         if(token){
+                                            tiraPontoV(token);
                                             fclose(arqComandos);
                                             insertTable(comandoSQL, tabela,token);
                                             return 0;
