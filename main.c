@@ -500,7 +500,7 @@ int main(int argc, char *argv[]){
                         		//char relA[20];
                         		strcpy(relA,token);
                         		strcpy(arqAnterior,relA);
-
+                                printf("%s",token);
                         		//verifica se existe join
                         		token = strtok(NULL, " ");
                         		if(token){
@@ -544,9 +544,11 @@ int main(int argc, char *argv[]){
 									}
                         		}
 
+                                printf("verificando where");
                         		//verifica se existe WHERE
                         		char aux2[100];
                         		if(fgets(aux2, sizeof(aux2), arqComandos)){
+                                    printf("tem where");
                         			token = strtok(aux2, " ");
                         			if(strcmp(token,"WHERE")==0){
 
@@ -618,12 +620,13 @@ int main(int argc, char *argv[]){
                         			else{
                         				// TA ERRADO TEM Q MODIFICAR ESSE CASO DO IMPRIME TABELA
                         				// PRECISA CHECAR ANTES SE ELE N TEM PROJECAO
-
-                        				imprimeTabela(relA); //o resultado e a propria tabela
+                                        printf("nao tem where");
+                        				//imprimeTabela(relA); //o resultado e a propria tabela
                         			}
 
-
-                        			if(strcmp(atributos,"*"))
+//                                    printf("%s",atributos);
+                        		}
+                                if(strcmp(atributos,"*"))
                         			{
                         				//faz projeção
                         				char comando[100];
@@ -639,11 +642,10 @@ int main(int argc, char *argv[]){
                         				strcat(comando,",");
                         				strcat(comando,"RESULTADO_PROJECAO");
                         				strcat(comando,")");
-
+                                        printf("%s",comando);
                         				fprintf(arqAlgebra,"%s\n",comando);
                         				interpreta(comando);
                         			}
-                        		}
                         	}
                     		else{
                        			//nunca entra nesse caso
