@@ -554,7 +554,7 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 	
 	//ajusta o nome do arquvio que serÃ¡ aberto
 	aux = geraNomeArq(relacao,".ctl");
-	FILE *frelacao = fopen(aux,"rd");
+	FILE *frelacao = fopen(aux,"rt");
 	free(aux);
 	if(!frelacao)exit(1);
 	
@@ -611,7 +611,7 @@ void projecao(char *relacao, char *n, char *lista, char *saida)
 	
 	//ajusta o nome do arquvio que serÃ¡ aberto
 	aux = geraNomeArq(relacao,".dad");
-	frelacao = fopen(aux,"rd");
+	frelacao = fopen(aux,"rt");
 	free(aux);
 	if(!frelacao)exit(1);
 	//ajusta o nome do arquvio que serÃ¡ aberto
